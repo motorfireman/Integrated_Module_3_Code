@@ -5,6 +5,8 @@ using Medical.Models.Module_3.P1_1.BloodGlucoseComponent;
 using Medical.ViewModel.Module_3.P1_1.BloodGlucoseComponent;
 using System.Text.Json;
 using Medical.Data_Source_Layer;
+using Medical.ViewModel.Module_3.P1_1;
+using Mediqu.Domain.Services;
 
 
 namespace Medical.Domain_Layer.Module_3.P1_1
@@ -16,22 +18,22 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 		private readonly IBGRisk _riskService;
 		private readonly TransformPatientListViewModel _transformer;
 		private readonly ILogger<BloodGLucoseAssessmentControl> _logger;
-		
+		private readonly List<PatientListViewModel> _allPatients;
 
 		public BloodGLucoseAssessmentControl(
 			IBloodGlucose bloodGlucoseService,
 			IBGRisk riskService,
 			ILogger<BloodGLucoseAssessmentControl> logger,
 			TransformPatientListViewModel transformer,
-			SmartHealthPlatformContext context)
+			SmartHealthPlatformContext context,
+			PatientListControl patientListService)
 		{
 			_bloodGlucoseService = bloodGlucoseService;
 			_riskService = riskService;
-			
 			_transformer = transformer;
 			_logger = logger;
 			_context = context;
-
+			_allPatients = patientListService.GetAllPatients(); // get all patient data
 		}
 
 
@@ -113,6 +115,39 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 
 
 
+
+		// method to populate BloodGlucose data for viewmodel
+		public void PopulateLatestBloodGlucoseData(int patientId, ref HealthPractitionerDashboardViewModel dashboardViewModel)
+		{
+			foreach (var patientListViewModel in _allPatients)
+			{
+				// Find the patient matching the given userId
+				var patient = patientListViewModel.SearchResults.FirstOrDefault(p => p.ID == patientId);
+				if (patient != null)
+				{
+
+
+					// Fetch the latest 24 blood glucose readings from the "Blood Glucose" device
+					var bloodGlucoseReadings = patient.DeviceReadings
+						.Where(r => r.DeviceName == "Blood Glucose")
+						.OrderByDescending(r => r.Timestamp)
+						.Take(24)
+						.SelectMany(r => r.ReadingValues.Where(rv => rv.Key == "blood glucose levels"))
+						.Select(rv => rv.Value)
+						.ToList();
+
+					// Populate latest reading in the dashboard view model for blood glucose
+
+					if (bloodGlucoseReadings.Any())
+					{
+						dashboardViewModel.LatestMinBloodGlucose = bloodGlucoseReadings.Min();
+						dashboardViewModel.LatestMaxBloodGlucose = bloodGlucoseReadings.Max();
+						dashboardViewModel.LatestAvgBloodGlucose = bloodGlucoseReadings.Average();
+					}
+
+				}
+			}
+		}
 
 
 	}

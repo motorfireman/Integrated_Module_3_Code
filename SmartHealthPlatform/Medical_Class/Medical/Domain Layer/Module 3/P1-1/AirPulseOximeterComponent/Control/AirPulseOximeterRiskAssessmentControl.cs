@@ -6,6 +6,8 @@ using System.Text.Json;
 using Medical.Data_Source_Layer;
 using Medical.Domain_Layer.Module_3.Mock;
 using Medical.Domain_Layer.Module_3.P1_2.Communication;
+using Mediqu.Domain.Services;
+using Medical.ViewModel.Module_3.P1_1;
 
 
 namespace Medical.Domain_Layer.Module_3.P1_1
@@ -20,6 +22,7 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 		private readonly IUserData _userData;
 		private readonly TransformPatientListViewModel _transformer;
 		private readonly ILogger<AirPulseOximeterRiskAssessmentControl> _logger;
+		private readonly List<PatientListViewModel> _allPatients;
 
 		public AirPulseOximeterRiskAssessmentControl(
 			IMessageSender messageSender,
@@ -29,7 +32,8 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 			IPerfusionIndex perfusionIndexService,
 			ILogger<AirPulseOximeterRiskAssessmentControl> logger,
 			TransformPatientListViewModel transformer,
-			SmartHealthPlatformContext context)
+			SmartHealthPlatformContext context, 
+			PatientListControl patientListService)
 		{
 			_pulseRateService = pulseRateService;
 			_spO2Service = spO2Service;
@@ -39,6 +43,7 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 			_context = context;
 			_messageSender = messageSender;
 			_userData = userData;
+			_allPatients = patientListService.GetAllPatients(); // get all patient data
 		}
 
 
@@ -73,13 +78,14 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 				assessmentTDG.Upsert(assessmentSDM);
 			}
 
+
 			try
 			{
-				_messageSender.Send(_userData.GetCurrentUser().Id, "Assessment Completion", "Your assessment is completed. Please check your email or Telegram for details.", MessageType.Email, MessageType.Telegram);
+				//_messageSender.Send(_userData.GetCurrentUser().Id, "Assessment Completion", "Your assessment is completed. Please check your email or Telegram for details.", MessageType.Email, MessageType.Telegram);
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Failed to send message for patient {patientId}: {ex.Message}");
+				//Console.WriteLine($"Failed to send message for patient {patientId}: {ex.Message}");
 			}
 
 
@@ -122,6 +128,36 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 				}
 			}
 		}
+
+
+		// method to populate Air Pulse Oximeter data
+		public void PopulateLatestAirPulseOximeterData(int patientId, ref HealthPractitionerDashboardViewModel dashboardViewModel)
+		{
+			foreach (var patientListViewModel in _allPatients)
+			{
+				// Find the patient matching the given userId
+				var patient = patientListViewModel.SearchResults.FirstOrDefault(p => p.ID == patientId);
+				if (patient != null)
+				{
+
+					// Attempt to find the latest reading for "Bone Health"
+					var latestBHReading = patient.DeviceReadings
+						.Where(r => r.DeviceName == "Body Composition")
+						.OrderByDescending(r => r.Timestamp)
+						.FirstOrDefault();
+
+					// Populate latest reading in the dashboard view model for bone health
+					if (latestBHReading != null)
+					{
+						dashboardViewModel.LatestBoneMass = latestBHReading.ReadingValues.FirstOrDefault(r => r.Key == "Bone Mass")?.Value ?? 0;
+						dashboardViewModel.LatestLeanMass = latestBHReading.ReadingValues.FirstOrDefault(r => r.Key == "Lean Mass")?.Value ?? 0;
+						dashboardViewModel.LatestProtein = latestBHReading.ReadingValues.FirstOrDefault(r => r.Key == "Protein")?.Value ?? 0;
+					}
+
+				}
+			}
+		}
+
 
 
 

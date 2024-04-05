@@ -3,7 +3,9 @@ using Medical.Data_Source_Layer.Module_3.P1_1.BloodPressureComponent;
 using Medical.Domain_Layer.Module_3.P1_1.BloodPressureComponent.Interface;
 using Medical.Models;
 using Medical.Models.Module_3.P1_1.BloodPressureComponent;
+using Medical.ViewModel.Module_3.P1_1;
 using Medical.ViewModel.Module_3.P1_1.BloodPressureComponent;
+using Mediqu.Domain.Services;
 
 
 namespace Medical.Domain_Layer.Module_3.P1_1
@@ -15,12 +17,15 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 		private readonly IMAPRiskSeverity _MAPSeverity;
 		private readonly TransformPatientListViewModel _transformer;
 		private readonly ILogger<BloodPressureRiskAssessmentControl> _logger;
+		private readonly List<PatientListViewModel> _allPatients;
+
 
 		public BloodPressureRiskAssessmentControl(
 			IHeartHealthRiskSeverity HeartHealthRiskSeverity,
 			IMAPRiskSeverity MAPRiskSeverity,
 			ILogger<BloodPressureRiskAssessmentControl> logger,
 			TransformPatientListViewModel transformer,
+			PatientListControl patientListService,
 			SmartHealthPlatformContext context)
 		{
 			_HeartHealthSeverity = HeartHealthRiskSeverity;
@@ -28,6 +33,7 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 			_transformer = transformer;
 			_logger = logger;
 			_context = context;
+			_allPatients = patientListService.GetAllPatients(); // get all patient data
 		}
 
 		public List<BloodPressureAnalysisViewModel> GetBPAnalysisSummary(int patientId)
@@ -128,6 +134,37 @@ namespace Medical.Domain_Layer.Module_3.P1_1
 			}
 
 		}
+
+
+		// method to populate Air Pulse Oximeter data
+		public void PopulateLatestBloodPressureData(int patientId, ref HealthPractitionerDashboardViewModel dashboardViewModel)
+		{
+			foreach (var patientListViewModel in _allPatients)
+			{
+				// Find the patient matching the given userId
+				var patient = patientListViewModel.SearchResults.FirstOrDefault(p => p.ID == patientId);
+				if (patient != null)
+				{
+
+
+					// Attempt to find the latest reading for "Blood Pressure Oximeter"
+					var BPReadings = patient.DeviceReadings
+						.Where(r => r.DeviceName == "Blood Pressure")
+						.OrderByDescending(r => r.Timestamp)
+						.FirstOrDefault();
+
+
+					// Populate latest reading in the dashboard view model for Blood Pressure
+
+					if (BPReadings != null)
+					{
+						dashboardViewModel.LatestSystolic = (float)(BPReadings.ReadingValues.FirstOrDefault(rv => rv.Key == "systolic")?.Value ?? 0.0f);
+						dashboardViewModel.LatestDiastolic = (float)(BPReadings.ReadingValues.FirstOrDefault(r => r.Key == "diastolic")?.Value ?? 0.0f);
+					}
+				}
+			}
+		}
+
 
 	}
 }

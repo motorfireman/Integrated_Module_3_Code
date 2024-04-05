@@ -1,10 +1,12 @@
-﻿using Medical.ViewModel.Module_3.P1_1.BloodPressureComponent;
+﻿using Medical.ViewModel.Module_3.P1_1;
+using Medical.ViewModel.Module_3.P1_1.BloodPressureComponent;
 
 namespace Medical.Domain_Layer.Module_3.P1_1.BloodPressureComponent.Interface
 {
 	public interface IBPAnalysis
 	{
 		List<BloodPressureAnalysisViewModel> GetBPAnalysisSummary(int patientId);
+		void PopulateLatestBloodPressureData(int patientId, ref HealthPractitionerDashboardViewModel dashboardViewModel);
 
 	}
 }
