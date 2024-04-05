@@ -6,36 +6,29 @@ using Medical.Models.Module_3.P1_1.BoneHealthComponent;
 using Medical.ViewModel.Module_3.P1_1.BoneHealthComponent;
 using System.Text.Json;
 using Medical.Domain_Layer.Module_3.P1_1.BoneHealthComponent.Interfaces;
+using Medical.ViewModel.Module_3.P1_1;
+using Mediqu.Domain.Services;
 
 namespace Medical.Domain_Layer.Module_3.P1_1.BoneHealthComponent.Control
 {
 	public class BoneHealthAssessmentControl : IBoneHealthAnalysis
 	{
 		private readonly SmartHealthPlatformContext _context;
-		/*private readonly IPulseRate _pulseRateService;
-		private readonly ISpO2 _spO2Service;
-		private readonly IPerfusionIndex _perfusionIndexService;*/
-		//private readonly IMessageSender _messageSender;
 		private readonly TransformPatientListViewModel _transformer;
 		private readonly ILogger<BoneHealthAssessmentControl> _logger;
+		private readonly List<PatientListViewModel> _allPatients;
 
 		public BoneHealthAssessmentControl(
-			//IMessageSender messageSender,
-			/*IPulseRate pulseRateService,
-			ISpO2 spO2Service,
-			IPerfusionIndex perfusionIndexService,*/
 			ILogger<BoneHealthAssessmentControl> logger,
 			TransformPatientListViewModel transformer,
-			SmartHealthPlatformContext context)
+			PatientListControl patientListService,
+			SmartHealthPlatformContext context
+			)
 		{
-			/*_pulseRateService = pulseRateService;
-			_spO2Service = spO2Service;
-			_perfusionIndexService = perfusionIndexService;*/
 			_transformer = transformer;
 			_logger = logger;
 			_context = context;
-			//_messageSender = messageSender;
-
+			_allPatients = patientListService.GetAllPatients(); // get all patient data
 		}
 
 
@@ -111,5 +104,42 @@ namespace Medical.Domain_Layer.Module_3.P1_1.BoneHealthComponent.Control
 				}
 			}
 		}
+
+
+
+
+
+
+		// method to populate PopulateLatestBoneHealthData
+		public void PopulateLatestBoneHealthData(int patientId, ref HealthPractitionerDashboardViewModel dashboardViewModel)
+		{
+			foreach (var patientListViewModel in _allPatients)
+			{
+				// Find the patient matching the given userId
+				var patient = patientListViewModel.SearchResults.FirstOrDefault(p => p.ID == patientId);
+				if (patient != null)
+				{
+
+
+					// Attempt to find the latest reading for "Air Pulse Oximeter"
+					var latestReading = patient.DeviceReadings
+						.Where(r => r.DeviceName == "Air Pulse Oximeter")
+						.OrderByDescending(r => r.Timestamp)
+						.FirstOrDefault();
+
+
+					// Populate latest reading in the dashboard view model for airpulse
+					if (latestReading != null)
+					{
+						dashboardViewModel.LatestPerfusionIndex = latestReading.ReadingValues.FirstOrDefault(r => r.Key == "Perfusion Index")?.Value ?? 0;
+						dashboardViewModel.LatestPulseRate = (int)(latestReading.ReadingValues.FirstOrDefault(r => r.Key == "Pulse rate")?.Value ?? 0);
+						dashboardViewModel.LatestSpO2 = latestReading.ReadingValues.FirstOrDefault(r => r.Key == "SP02")?.Value ?? 0;
+					}
+				}
+			}
+		}
+
+
+
 	}
 }
