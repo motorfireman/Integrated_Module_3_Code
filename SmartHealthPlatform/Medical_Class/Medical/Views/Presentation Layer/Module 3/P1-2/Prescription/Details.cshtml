@@ -1,0 +1,60 @@
+﻿@model Medical.Domain_Layer.Module_3.P1_2.Prescription.PrescriptionEntity
+
+@{
+    ViewData["Title"] = "Prescription Details";
+}
+
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+
+        <h2>Prescription Details</h2>
+
+        <div>
+            <dl>
+                <dt>Medication Name</dt>
+                <dd>@Model.MedicationName</dd>
+
+                <dt>Quantity</dt>
+                <dd>@Model.Quantity</dd>
+
+                <dt>Unit</dt>
+                <dd>@Model.Unit</dd>
+            </dl>
+        </div>
+
+        <a href="@Url.Action("Index", "Prescription")">Back to List</a>
+
+
+
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+
+}

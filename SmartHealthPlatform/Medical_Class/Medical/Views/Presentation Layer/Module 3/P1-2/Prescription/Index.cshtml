@@ -1,0 +1,361 @@
+﻿@model IEnumerable<Medical.Domain_Layer.Module_3.P1_2.Prescription.PrescriptionEntity>
+
+@{
+    ViewData["Title"] = "Prescription";
+    ViewData["Heading"] = "Prescription";
+}
+
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+        <div id="logged-in" class="d-none">
+
+            <button id="addPrescription" class="btn btn-primary float-right">Add New Prescription</button>
+            <button id="printPrescription" class="btn btn-primary float-right d-none">Print Prescription</button>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <tbody>
+                </tbody>
+            </table>
+			<div class="table-responsive">
+                <div id="userName" class="d-none"></div>
+				<table class="table patient-activity flex-nowrap">
+					<thead>
+						<tr>
+							<th>Medication Name</th>
+							<th>Quantity</th>
+							<th>Unit</th>
+                            <th>Prescribed To</th>
+                            <th>Prescribed At</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<div class="media align-items-center flex-wrap">
+									<div class="media-body">
+										<p id="medicationName" class="mb-0"></p>
+									</div>
+								</div>
+							</td>
+							<td>
+								<h5 id="quantity" class="my-0 text-primary"></h5>
+							</td>
+							<td>
+								<h5 id="unit" class="my-0 text-primary"></h5>
+							</td>
+                            <td>
+                                <h5 id="prescribedTo" class="my-0 text-primary"></h5>
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col">
+                                        <button class="btn btn-primary" id="editButton">Edit</button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-secondary" id="deleteButton">Delete</button>
+                                    </div>
+                                </div>
+                            </td>
+						</tr>
+					</tbody>
+				</table>
+            </div>
+        </div>
+
+
+        <div id="not-logged-in" class="d-none">
+            <h3>You are not logged in.</h3>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+    <script>
+        const loggedInContainer = document.querySelector("#logged-in");
+        const loggedInRightContainer = document.querySelector("#logged-in-right");
+        const notLoggedInContainer = document.querySelector("#not-logged-in");
+        const userNameDiv = document.getElementById("userName");
+
+        const addPrescriptionButton = document.getElementById("addPrescription");
+        
+        addPrescriptionButton.addEventListener("click", () => {
+            window.location.href = "/Prescription/Create";
+        });
+
+        let currentUser = "";
+        let currentRole = "";
+        let userRelationshipData = [];
+
+        const checkLoginStatus = () => {
+            fetch("/MockLogin/CheckLogin/")
+                .then(response => response.json())
+                .then(json => {
+                    if (!json["logged_in"]) {
+                        notLoggedInContainer.className = "mb-4";
+                    } else {
+                        loggedInContainer.className = "mb-4";
+                    }
+                });
+        }
+
+        const getUserDetails = async () => {
+            try {
+                const response = await fetch("/Prescription/GetUserDetails/");
+                const json = await response.json();
+                console.log(json);
+                const { user, user_relationship } = json;
+                userRelationshipData = user_relationship;
+                console.log(userRelationshipData);
+                currentUser = user["name"];
+                currentRole = user["role"];
+                userNameDiv.textContent = user["id"];
+
+                if (currentUser) {
+                    if (Array.isArray(user_relationship)) {
+                        getPrescriptions(user["id"]);
+                    } else {
+                        getPrescriptionsForPatient(user["id"]);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user details:", error);
+            }
+        }
+
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            // Extract date components
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            // Add leading zero if needed
+            const formattedDay = day < 10 ? `0${day}` : day;
+            const formattedMonth = month < 10 ? `0${month}` : month;
+            // Get hours and minutes
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            // Add leading zero if needed for hours and minutes
+            const formattedHours = hours < 10 ? `0${hours}` : hours;
+            const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            // Format the date and time
+            const formattedDate = `${formattedMonth}/${formattedDay}/${year} ${formattedHours}:${formattedMinutes}`;
+            return formattedDate;
+        };
+
+        const getPrescriptions = (userId) => {
+            // Append userId to the URL
+            fetch(`/Prescription/GetPrescriptionsById/?id=${userId}`)
+                .then(response => response.json())
+                .then(json => {
+                    console.log(json);
+                    const tableBody = document.querySelector("table.patient-activity tbody");
+
+                    // Clear existing rows
+                    tableBody.innerHTML = "";
+
+                    json.forEach(prescription => {
+                        const user = userRelationshipData.find(user => user.id === prescription.userId);
+                        if (user) {
+                            prescription.userId = user.name;
+                        }
+                    });
+                    // Iterate over the prescriptions and create table rows dynamically
+                    json.forEach(prescription => {
+                        // Create a new table row
+                        const row = document.createElement("tr");
+
+                        // Populate the row with prescription data
+                        row.innerHTML = `
+                                    <td class="my-0 text-primary">${prescription.medicationName}</td>
+                                    <td class="my-0 text-primary">${prescription.quantity}</td>
+                                    <td class="my-0 text-primary">${prescription.unit}</td>
+                                    <td class="my-0 text-primary">${prescription.userId}</td>
+                                    <td class="my-0 text-primary">${formatDate(prescription.prescribedOn)}</td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col">
+                                                <button class="btn btn-primary edit-button" data-prescription-id="${prescription.id}">Edit</button>
+                                            </div>
+                                            <div class="col">
+                                                <button class="btn btn-secondary delete-button" data-prescription-id="${prescription.id}">Delete</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                `;
+
+                        // Append the row to the table body
+                        tableBody.appendChild(row);
+                    });
+
+                    // Add event listener to edit buttons
+                    const editButtons = document.querySelectorAll(".edit-button");
+                    editButtons.forEach(button => {
+                        button.addEventListener("click", (event) => {
+                            const prescriptionId = event.target.dataset.prescriptionId;
+                            window.location.href = `/Prescription/Edit/${prescriptionId}`;
+                        });
+                    });
+
+                    // Add event listener to delete buttons
+                    const deleteButtons = document.querySelectorAll(".delete-button");
+                    deleteButtons.forEach(button => {
+                        button.addEventListener("click", (event) => {
+                            const prescriptionId = event.target.dataset.prescriptionId;
+
+                            if (confirm("Are you sure you want to delete this prescription?")) {
+                                // Construct the delete URL
+                                const deleteUrl = `/Prescription/Delete/${prescriptionId}`;
+
+                                // Send a POST request to the delete URL
+                                fetch(deleteUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert("Prescription deleted successfully");
+                                            window.location.reload();
+                                        } else {
+                                            alert("Failed to delete prescription");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        alert("Error occurred while deleting prescription:", error);
+                                    });
+                            }
+                        });
+                    });
+
+                });
+        }
+
+        // Store the prescriptions data
+        let prescriptionsData = [];
+
+        const getPrescriptionsForPatient = (userId) => {
+            // Append userId to the URL
+            fetch(`/Prescription/GetPrescriptionsByPatientId/?id=${userId}`)
+                .then(response => response.json())
+                .then(json => {
+                    prescriptionsData = json;
+                    console.log(prescriptionsData);
+                    const tableBody = document.querySelector("table.patient-activity tbody");
+
+                    // Clear existing rows
+                    tableBody.innerHTML = "";
+
+                    // Iterate over the prescriptions and create table rows dynamically
+                    json.forEach(prescription => {
+                        // Create a new table row
+                        const row = document.createElement("tr");
+
+                        // Populate the row with prescription data
+                        row.innerHTML = `
+                                <td class="my-0 text-primary">${prescription.medicationName}</td>
+                                <td class="my-0 text-primary">${prescription.quantity}</td>
+                                <td class="my-0 text-primary">${prescription.unit}</td>
+                                <td class="my-0 text-primary">${currentUser}</td>
+                                <td class="my-0 text-primary">${formatDate(prescription.prescribedOn)}</td>
+                                <td>
+ 
+                                </td>
+                            `;
+
+                        // Append the row to the table body
+                        tableBody.appendChild(row);
+                    });
+
+                    // Hide the addPrescription button and show the printPrescription button
+                    const addPrescriptionButton = document.getElementById("addPrescription");
+                    const printPrescriptionButton = document.getElementById("printPrescription");
+                    addPrescriptionButton.classList.add("d-none");
+                    printPrescriptionButton.classList.remove("d-none");
+               
+                });
+        }
+
+        const generatePDF = () => {
+            const doc = new jsPDF();
+            doc.setProperties({ title: 'Prescriptions' });
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(0, 0, 0);
+            doc.text("Prescriptions", 10, 10);
+
+            // Reset font size for the rest of the text and set font to normal
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+
+            const headers = ["Medication Name", "Quantity", "Unit", "Prescribed At"];
+            const columnPositions = [10, 70, 110, 150];
+
+            // Add headers to the document
+            headers.forEach((header, index) => {
+                doc.text(header, columnPositions[index], 20);
+            });
+
+            // Starting y-position for the data rows, just below the header
+            let yPos = 30; 
+
+            // Loop through prescription data to add each row
+            prescriptionsData.forEach((prescription, index) => {
+                // Ensure that each detail is a string and not null or undefined
+                const medicationName = String(prescription.medicationName || '');
+                const quantity = String(prescription.quantity || '');
+                const unit = String(prescription.unit || '');
+                const prescribedOn = formatDate(prescription.prescribedOn);
+
+                // Array of strings for prescription details
+                const prescriptionDetails = [medicationName, quantity, unit, prescribedOn];
+
+                // Print each detail at the correct column position
+                prescriptionDetails.forEach((detail, i) => {
+                    doc.text(detail, columnPositions[i], yPos);
+                });
+
+                // Increment yPos by 10 for each new line of prescription data
+                yPos += 10;
+            });
+
+            doc.save("prescriptions.pdf");
+        };
+
+        // Event listener for printPrescription button
+        const printPrescriptionButton = document.getElementById("printPrescription");
+        printPrescriptionButton.addEventListener("click", generatePDF);
+
+        checkLoginStatus();
+        getUserDetails();
+
+    </script>
+
+}

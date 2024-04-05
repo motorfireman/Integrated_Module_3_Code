@@ -1,0 +1,469 @@
+﻿@{
+	ViewData["Title"] = "Patient Dashboard";
+	ViewData["Heading"] = "Patient Dashboard";
+}
+
+<!--**********************************
+	Content body start
+***********************************-->
+
+
+<div class="content-body default-height default-height">
+	<div class="container-fluid">
+
+
+
+
+		<!-- This section is for the page heading and the back search button -->
+		<div class="form-head d-flex mb-3 mb-md-5 align-items-start flex-wrap justify-content-between">
+			<!-- Welcome message -->
+			<div class="me-auto d-lg-block">
+				<!-- Display the patient name -->
+				<h3 class="text-primary font-w600">@Model.Patient.Name's Medical Dashboard (Overview)</h3>
+				<p class="mb-0">Patient ID: @Model.Patient.ID | Age: @Model.Patient.Age | Gender: @Model.Patient.Gender</p>
+			</div>
+
+			<!-- Back to search forum button -->
+			<div class="col-lg-4 d-flex justify-content-end">
+				<!-- Changed class to justify-content-end -->
+				<a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+					<i class="fas fa-search"></i> Search Again
+				</a>
+			</div>
+		</div>
+
+
+
+		<!-- Dashboard widgets row starts -->
+		<div class="row">
+
+
+			<div class="row">
+
+				<!-- Number of Active Devices -->
+				<div class="col-xl-6 col-lg-6 col-sm-6">
+					<div class="app-stat card bg-info">
+						<div class="card-body p-4">
+							<div class="media flex-wrap">
+								<span class="me-3">
+									<i class="flaticon-381-battery"></i>
+								</span>
+								<div class="media-body text-white text-end">
+									<p class="mb-1">Active Devices Count</p>
+									<h2 class="text-white">@Model.ActiveDeviceCount</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Latest Visit -->
+				<div class="col-xl-6 col-lg-6 col-sm-6">
+					<div class="app-stat card bg-warning">
+						<div class="card-body p-4">
+							<div class="media flex-wrap">
+								<span class="me-3">
+									<i class="flaticon-381-clock"></i>
+								</span>
+								<div class="media-body text-white text-end">
+									<p class="mb-1">Last Visit Date</p>
+									<!-- Formatting the LastVisitDate to a readable format -->
+									<h2 class="text-white">@Model.LastVisitDate?.ToString("dd MMM yyyy")</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Next Appointment -->
+				<div class="col-xl-12 col-lg-12 col-sm-12">
+					<div class="app-stat card bg-danger">
+						<div class="card-body p-4">
+							<div class="media flex-wrap">
+								<span class="me-3">
+									<i class="flaticon-381-calendar-1"></i> <!-- Larger icon for next appointment -->
+								</span>
+								<div class="media-body text-white text-end">
+									<p class="mb-1">Next Scheduled Appointment</p>
+									<h2 class="text-white">28 April 2024, 2PM</h2>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+
+			</div>
+
+
+			<!-- Left half of the dashboard -->
+			<div class="col-xl-6 col-xxl-6">
+				<!-- Nested row for cards -->
+				<div class="row">
+
+
+
+					<!--  Bone Health Assessment Summary Card -->
+					<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+						<div class="card bone-health-summary-card">
+							<!-- Card Header -->
+							<div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+								<h4 class="card-title m-0">Bone Health Summary</h4>
+								<button class="btn btn-outline-light" onclick="window.location.href='@Url.Action("BoneHealthAnalysis", "BoneHealthAnalysis", new { id = Model.Patient.ID })'">View Details</button>
+							</div>
+							<!-- Card Body -->
+							<div class="card-body">
+								<div class="d-flex justify-content-around align-items-center">
+									<!-- Bone Density -->
+									<div class="summary-item text-center">
+										<h5 class="text-secondary">Bone Density</h5>
+										<p><strong>2.5 g/cm²</strong></p>
+									</div>
+									<!-- Divider -->
+									<div class="vertical-divider"></div>
+									<!-- Risk Level -->
+									<div class="summary-item text-center">
+										<h5 class="text-danger">Risk Level</h5>
+										<p><strong>Low</strong></p>
+									</div>
+									<!-- Divider -->
+									<div class="vertical-divider"></div>
+									<!-- Calcium Intake -->
+									<div class="summary-item text-center">
+										<h5 class="text-info">Calcium Intake</h5>
+										<p><strong>1200 mg/day</strong></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--  Bone Health Assessment Summary Card Ends Here -->
+					<!--  Blood Pressure Summary Card -->
+
+					<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+						<div class="card blood-pressure-summary-card">
+
+							<!-- Card Header -->
+							<div class="card-header border-0 pb-0 d-flex justify-content-between align-items-center">
+								<h4 class="card-title m-0">Blood Pressure Summary</h4>
+								<button class="btn btn-outline-light" onclick="window.location.href='@Url.Action("BloodPressureAnalysis", "BloodPressureAnalysis", new { id = Model.Patient.ID })'">View Details</button>
+							</div>
+
+
+							<!-- Card Body -->
+							<div class="card-body">
+								<!-- Adjusted Latest Readings Title -->
+								<h4 class="card-title text-center" style="color: #007bff; margin-bottom: 20px;">Latest Readings</h4>
+								<div class="d-flex justify-content-around align-items-center">
+
+									<!-- Latest Systolic -->
+									<div class="summary-item text-center">
+										<h5 class="text-danger">Systolic Pressure</h5>
+										<p class="mb-1">Systolic: <strong>@String.Format("{0:F2} mmHg", Model.LatestSystolic)</strong></p>
+									</div>
+									<!-- Divider -->
+									<div class="vertical-divider"></div>
+									<!-- Latest Diastolic -->
+									<div class="summary-item text-center">
+										<h5 class="text-info">Diastolic Pressure</h5>
+										<p class="mb-1">Diastolic: <strong>@String.Format("{0:F2} mmHg", Model.LatestDiastolic)</strong></p>
+									</div>
+
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--  Blood Pressure Summary Card Ends Here -->
+
+
+
+
+				</div>
+			</div>
+			<!-- Left half of the dashboard ends here -->
+			<!-- Right half of the dashboard-->
+			<div class="col-xl-6 col-xxl-6">
+
+				<!-- Blood Glucose Summary-->
+
+				<div class="col-12">
+					<div class="card blood-glucose-summary-card">
+						<div class="card-header d-flex justify-content-between align-items-center border-0 pb-0">
+							<h4 class="card-title m-0">Blood Glucose Summary (Last 7 Days)</h4>
+							<button class="btn btn-outline-light" onclick="window.location.href='@Url.Action("BloodGlucoseAnalysis", "BloodGlucoseAnalysis", new { id = Model.Patient.ID })'">View Details</button>
+						</div>
+						<div class="card-body">
+							<h4 class="card-title text-center" style="color: #007bff; margin-bottom: 20px;">Trend Analysis</h4>
+							<div class="summary-container d-flex justify-content-around">
+								<!-- Average Glucose Level -->
+								<div class="summary-item text-center">
+									<h5 class="text-secondary">Average</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestAvgBloodGlucose.ToString("F2") mg/dl</p>
+									<span class="text-muted">Average level</span>
+								</div>
+								<!-- Highest Glucose Level -->
+								<div class="summary-item text-center">
+									<h5 class="text-warning">Peak</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestMaxBloodGlucose.ToString("F2") mg/dl</p>
+									<span class="text-muted">Highest level</span>
+								</div>
+								<!-- Lowest Glucose Level -->
+								<div class="summary-item text-center">
+									<h5 class="text-info">Lowest</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestMinBloodGlucose.ToString("F2") mg/dl</p>
+									<span class="text-muted">Lowest level</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+
+				<!-- Air Pulse Oximeter Summary -->
+				<div class="col-12">
+					<div class="card air-pulse-oximeter-summary-card" style="border-radius: 15px; box-shadow: 0 8px 16px rgba(0,0,0,0.1);">
+						<div class="card-header d-flex justify-content-between align-items-center border-0 pb-0">
+							<h4 class="card-title m-0">Air Pulse Oximeter Summary</h4>
+							<button class="btn btn-outline-light" onclick="window.location.href='@Url.Action("AirPulseOximeterAnalysis", "AirPulseOximeterAnalysis", new { id = Model.Patient.ID })'">View Details</button>
+						</div>
+						<div class="card-body">
+							<h4 class="card-title text-center" style="color: #007bff; margin-bottom: 20px;">Latest Readings</h4>
+							<div class="summary-container" style="text-align: center;">
+
+								<!-- Latest PerfusionIndex -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5 class="text-primary">Perfusion Index</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestPerfusionIndex.ToString("F2")%</p>
+									<span class="text-muted">Pulse strength</span>
+								</div>
+
+								<!-- Latest Pulse Rate -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5 class="text-success">Pulse Rate</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestPulseRate bpm</p>
+									<span class="text-muted">Beats per minute</span>
+								</div>
+
+								<!-- Latest SpO2 -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5 class="text-info">SpO2</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestSpO2.ToString("F2")%</p>
+									<span class="text-muted">Oxygen saturation level</span>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+				<!-- Metabolic Health Summary -->
+				<div class="col-12">
+					<div class="card metabolic-health-summary-card" style="border-radius: 15px; box-shadow: 0 8px 16px rgba(0,0,0,0.1);">
+
+						<div class="card-header d-flex justify-content-between align-items-center border-0 pb-0">
+							<h4 class="card-title m-0">Metabolic Health Summary</h4>
+							<button class="btn btn-outline-light" onclick="window.location.href='@Url.Action("MetabolicHealthAnalysis", "MetabolicHealthAnalysis", new { id = Model.Patient.ID })'">View Details</button>
+						</div>
+
+						<div class="card-body">
+
+							<!-- Adjusted Latest Readings Title -->
+							<h4 class="card-title text-center" style="color: #007bff; margin-bottom: 20px;">Latest Readings</h4>
+
+							<div class="summary-container" style="text-align: center;">
+
+								<!-- Latest BMI -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5>Weight</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestWeight.ToString("F1")kg</p>
+								</div>
+
+								<!-- Latest BMR -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5>Body Fat Percentage</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.LatestBodyFatPercentage.ToString("F2")%</p>
+								</div>
+
+								<!-- Current Risk -->
+								<div class="summary-item" style="margin-bottom: 20px;">
+									<h5>Risk</h5>
+									<p class="value" style="font-size: 20px; font-weight: bold;">@Model.CurrentRisk</p>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+			</div>
+			<!-- Right half of the dashboard ends here-->
+			<!-- Continue below this comment to add more card such as entire column or you can add on to the left/right half of the dashboard in the code above-->
+
+		</div>
+
+
+	</div>
+</div>
+<!--**********************************
+	Content body end
+***********************************-->
+@section mediqu_style
+{
+
+	<!-- Start Page Level CSS -->
+	<link href="~/mediqu/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
+	<link href="~/mediqu/vendor/chartist/css/chartist.min.css" rel="stylesheet">
+
+
+
+
+	<!-- Additional styling -->
+	<style>
+
+		.blood-pressure-summary-card {
+			background-color: #f9f9f9;
+			border-radius: 15px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.summary-item h5 {
+			margin-bottom: 15px;
+			font-size: 18px;
+		}
+
+		.summary-item p {
+			font-size: 16px;
+		}
+
+		.vertical-divider {
+			height: 80px;
+			width: 1px;
+			background-color: #dee2e6;
+		}
+
+		.btn-outline-primary {
+			border: 2px solid #007bff;
+			color: #007bff;
+		}
+
+			.btn-outline-primary:hover {
+				background-color: #007bff;
+				color: #ffffff;
+			}
+
+		<!-- Additional styling for Bone Health Assessment Card -->
+		.bone-health-summary-card {
+			background-color: #f4f6f9;
+			border-radius: 15px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+
+		.summary-item h5 {
+			margin-bottom: 10px;
+			font-size: 18px;
+		}
+
+		.summary-item p {
+			font-size: 16px;
+			margin: 0;
+		}
+
+		.vertical-divider {
+			height: 60px;
+			width: 2px;
+			background-color: #dee2e6;
+		}
+
+		.btn-outline-success {
+			border: 2px solid #28a745;
+			color: #28a745;
+		}
+
+			.btn-outline-success:hover {
+				background-color: #28a745;
+				color: #ffffff;
+			}
+
+
+		.summary-card {
+			background-color: #f9f9f9;
+			border-radius: 15px;
+			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+			transition: box-shadow 0.3s ease-in-out;
+		}
+
+			.summary-card:hover {
+				box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+			}
+
+			.summary-card .card-header {
+				border-bottom: 1px solid #eee;
+			}
+
+		.summary-container {
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			text-align: center;
+		}
+
+		.summary-item {
+			flex: 1;
+		}
+
+			.summary-item h5 {
+				color: #333;
+				margin-bottom: 0.5rem;
+			}
+
+			.summary-item .value {
+				font-size: 1.25rem;
+				font-weight: bold;
+				color: #017BFF; /* Primary color for values */
+			}
+
+		.btn-outline-info {
+			border-color: #017BFF;
+			color: #017BFF;
+		}
+
+			.btn-outline-info:hover {
+				background-color: #017BFF;
+				color: #fff;
+			}
+
+	</style>
+
+	<!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+	<!--**********************************
+		Scripts
+	***********************************-->
+	<!-- Required vendors -->
+	<script src="~/mediqu/vendor/global/global.min.js"></script>
+	<script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+	<!-- Apex Chart -->
+	<script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+	<!-- Dashboard 1 -->
+	<script src="~/mediqu/js/dashboard/dashboard-1.js"></script>
+	<script src="~/mediqu/js/custom.min.js"></script>
+	<script src="~/mediqu/js/deznav-init.js"></script>
+
+
+
+}
+

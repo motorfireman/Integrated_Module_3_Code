@@ -1,0 +1,135 @@
+﻿@model IEnumerable<Medical.Domain_Layer.Module_3.P1_2.BiomarkerAlertConfig.BiomarkerAlertConfig>
+@{
+    ViewData["Title"] = "Biomarkers Alert Configuration";
+    ViewData["Heading"] = "Biomarkers Alert Configuration";
+}
+
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+        <h2>@ViewData["Title"]</h2>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>User Device ID</th>
+            <th>MP ID</th>
+            <th>Biomarker ID</th>
+            <th>Telegram Alert Enabled</th>
+            <th>Email Alert Enabled</th>
+            <th>Severity</th>
+            <th>Max Threshold</th>
+            <th>Min Threshold</th>
+            <th>Template ID</th
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var config in Model)
+        {
+            <tr>
+                <td><input type="text" class="form-control" value="@config.UserDeviceId" data-id="@config.Id" data-field="UserDeviceId" /></td>
+                <td><input type="text" class="form-control" value="@config.MpId" data-id="@config.Id" data-field="MpId" /></td>
+                <td><input type="text" class="form-control" value="@config.BiomarkerId" data-id="@config.Id" data-field="" /></td>
+                <td><input type="text" class="form-control telegram-alert-enabled" value="@(config.TelegramAlertEnabled ? "True" : "False")" data-id="@config.Id" data-field="TelegramAlertEnabled" /></td>
+            
+                <td><input type="text" class="form-control email-alert-enabled" value="@(config.EmailAlertEnabled ? "True" : "False")" data-id="@config.Id" data-field="EmailAlertEnabled" /></td>
+                <td><input type="text" class="form-control" value="@config.Severity" data-id="@config.Id" data-field="Severity" /></td>
+                <td><input type="text" class="form-control" value="@config.MaxThreshold" data-id="@config.Id" data-field="MaxThreshold" /></td>
+                <td><input type="text" class="form-control" value="@config.MinThreshold" data-id="@config.Id" data-field="MinThreshold" /></td>
+          
+                <td><input type="text" class="form-control" value="@config.TemplateId" data-id="@config.Id" data-field="TemplateId" /></td>
+                <td>
+                    <button type="button" class="btn btn-primary save-btn" data-id="@config.Id">Save</button>
+                    <form asp-action="Delete" asp-route-id="@config.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+
+        <div style="margin-top: 10px;">
+                    <a href="@Url.Action("Create", "BiomarkerAlertConfig")" class="btn btn-secondary">CREATE</a>
+                </div>
+
+        <!--**********************************
+            This is the template. Copy everything from here (CTRL A + CTRL C then CTRL V.  Then start putting ur HTML code here within the TWO DIV Class.
+        ***********************************-->
+
+
+
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <style>
+        table, tr { overflow-x: scroll; }
+        th, td { min-width: 200px; }
+    </style>
+        <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+        <!--**********************************
+            Scripts
+        ***********************************-->
+        <!-- Required vendors -->
+        <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+        <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+        <!-- Apex Chart -->
+        <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+        <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="~/mediqu/js/custom.min.js"></script>
+        <script src="~/mediqu/js/deznav-init.js"></script>
+            <script>
+            $(document).ready(function () {
+                $('.save-btn').click(function () {
+                    var row = $(this).closest("tr");
+                    var configId = $(this).data("id");
+                    var data = {
+                        Id: configId,
+                        UserDeviceId: row.find("input[data-field='UserDeviceId']").val(),
+                        MpId: row.find("input[data-field='MpId']").val(),
+                        BiomarkerId: row.find("input[data-field='BiomarkerId']").val(),
+                        TelegramAlertEnabled: row.find("input[data-field='TelegramAlertEnabled']").val() === "True",
+                        EmailAlertEnabled: row.find("input[data-field='EmailAlertEnabled']").val() === "True",
+                        Severity: row.find("input[data-field='Severity']").val(),
+                        MaxThreshold: parseFloat(row.find("input[data-field='MaxThreshold']").val()),
+                        MinThreshold: parseFloat(row.find("input[data-field='MinThreshold']").val()),
+                        TemplateId: parseInt(row.find("input[data-field='TemplateId']").val())
+                    };
+
+                    $.ajax({
+                        url: '@Url.Action("SaveEdit", "BiomarkerAlertConfig")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function (response) {
+                            if (response.success) {
+                                // Refresh the page or table here
+                                window.location.reload(); // Simplest approach to refresh the page
+                            } else {
+                                alert("An error occurred. Please try again.");
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+
+
+}

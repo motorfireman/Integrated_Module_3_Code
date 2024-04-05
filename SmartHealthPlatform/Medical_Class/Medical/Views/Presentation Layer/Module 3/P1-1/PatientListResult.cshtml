@@ -1,0 +1,469 @@
+﻿@{
+    ViewData["Title"] = "Search Patient Result";
+    ViewData["Heading"] = "Search Patient Result";
+}
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+
+
+        <!--**********************************
+            Search Results Display
+        ***********************************-->
+        @model Medical.ViewModel.Module_3.P1_1.PatientListViewModel
+
+        <div class="container">
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-margin">
+                        <div class="card-body">
+                            <div class="row search-body">
+                                <div class="col-lg-12">
+
+                                    <div class="search-result">
+                                        <div class="result-header">
+                                            <div class="row align-items-center">
+
+                                                <!-- Back to Patient List button -->
+                                                <div class="col-lg-4 d-flex justify-content-start">
+                                                    <a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+                                                        <i class="fas fa-search"></i> Return to Searching
+                                                    </a>
+                                                </div>
+
+                                                <!-- Results count -->
+                                                <div class="col-lg-8 d-flex justify-content-end">
+                                                    @{
+                                                        var startItem = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                                                        var endItem = startItem + Model.SearchResults.Count - 1;
+                                                        var totalCount = Model.TotalCount;
+                                                    }
+                                                    <div class="records">Showing: <b>@startItem-@endItem</b> of <b>@totalCount</b> results</div>
+                                                </div>
+
+                                                <!-- Sorting options -->
+                                                <div class="col-lg-12 mt-2 d-flex justify-content-end">
+                                                    <form action="@Url.Action("PatientListResult", "PatientList")" method="get" class="d-inline">
+                                                        <div class="form-inline">
+                                                            <select name="sortField" class="form-control-sm mr-2" style="font-size: 10px;">
+                                                                <option value="Name">Name</option>
+                                                                <option value="Age">Age</option>
+                                                                <option value="UserID">User ID</option>
+                                                            </select>
+                                                            <select name="sortOrder" class="form-control-sm mr-2" style="font-size: 10px;">
+                                                                <option value="Ascending">Ascending</option>
+                                                                <option value="Descending">Descending</option>
+                                                            </select>
+
+                                                            <!-- Include other filter parameters as hidden fields to preserve them across sorting for url -->
+                                                            <input type="hidden" name="NameFilter" value="@Model.NameFilter" />
+                                                            <input type="hidden" name="DeviceFilter" value="@Model.DeviceFilter" />
+                                                            <input type="hidden" name="AgeGroupFilter" value="@Model.AgeGroupFilter" />
+                                                            <input type="hidden" name="GenderFilter" value="@Model.GenderFilter" />
+                                                            <input type="hidden" name="page" value="@Model.CurrentPage" />
+                                                            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+
+                                                            <!-- Submit Button -->
+                                                            <button type="submit" class="btn btn-primary btn-sm">Sort</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
+                                    <div class="result-body">
+                                        <div class="table-responsive">
+                                            <table class="table widget-26">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Profile</th>
+                                                        <th>User ID</th>
+                                                        <th>Patient Name</th>
+                                                        <th>Age</th>.
+                                                        <th>Gender</th>
+                                                        <th>Active Devices</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var patient in Model.SearchResults)
+                                                    {
+                                                        <tr>
+
+                                                            <!-- Profile icon image -->
+                                                            <td>
+                                                                <div class="widget-26-job-emp-img">
+                                                                    <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="Profile" />
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- User ID -->
+                                                            <td>
+                                                                <div class="widget-26-job-title">
+                                                                    @patient.ID
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Name -->
+                                                            <td>
+                                                                <div class="widget-26-job-info bg-soft-warning">
+                                                                    @patient.Name
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Age -->
+                                                            <td>
+                                                                <div class="widget-26-job-category bg-soft-base">
+                                                                    @patient.Age
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Gender -->
+                                                            <td>
+                                                                <div class="widget-26-job-category bg-soft-info">
+                                                                    @patient.Gender
+                                                                </div>
+                                                            </td>
+
+
+
+                                                            <!-- Active Devices -->
+                                                            <td>
+                                                                <div class="widget-26-job-salary bg-soft-danger">
+                                                                    @if (patient.DeviceReadings.Any())
+                                                                    {
+                                                                        var deviceNames = patient.DeviceReadings
+                                                                        .Select(dr => dr.DeviceName)
+                                                                        .Distinct()
+                                                                        .ToList(); // Convert to list to use indexing
+
+                                                                        for (int i = 0; i < deviceNames.Count; i++)
+                                                                        {
+                                                                            <!-- Display device name -->
+                                                                            <span class="device-name">@deviceNames[i]</span>
+
+                                                                            <!-- If this is not the last device, and we're at an even index (which means we printed two names), add a line break -->
+                                                                            if (i < deviceNames.Count - 1)
+                                                                            {
+                                                                                if (i % 2 == 1) // Check if the current index is odd (since we start from 0, odd means we're at the second device name)
+                                                                                {
+                                                                                    @:<br>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @:
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>No Device Reading</span>
+                                                                    }
+
+                                                                </div>
+                                                            </td>
+
+                                                         
+                                                            <td>
+                                                                <div class="widget-26-job-starred">
+
+
+                                                                    <!-- Navigate to Dashboard by Patient ID -->
+                                                                    <a href="@Url.Action("HealthPractitionerDashboard", "HealthPractitionerDashboard", new { id = patient.ID })" class="btn btn-primary">View Summary</a>
+
+                                                                </div>
+                                                            </td>
+
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Pagination that keep tracks of filter and page number -->
+                                    <nav class="d-flex justify-content-center">
+                                        <ul class="pagination pagination-base pagination-boxed pagination-square mb-0">
+                                            @if (Model.CurrentPage > 1)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link no-border" href="@Url.Action("PatientListResult", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize, NameFilter = Model.NameFilter, DeviceFilter = Model.DeviceFilter, AgeGroupFilter = Model.AgeGroupFilter, GenderFilter = Model.GenderFilter, sortField = Model.SortField, sortOrder = Model.SortOrder })">
+                                                        «
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @for (int i = 1; i <= Model.TotalPages; i++)
+                                            {
+                                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                                    <a class="page-link no-border" href="@Url.Action("PatientListResult", new { page = i, pageSize = Model.PageSize, NameFilter = Model.NameFilter, DeviceFilter = Model.DeviceFilter, AgeGroupFilter = Model.AgeGroupFilter, GenderFilter = Model.GenderFilter, sortField = Model.SortField, sortOrder = Model.SortOrder })">@i</a>
+                                                </li>
+                                            }
+
+                                            @if (Model.CurrentPage < Model.TotalPages)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link no-border" href="@Url.Action("PatientListResult", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize, NameFilter = Model.NameFilter, DeviceFilter = Model.DeviceFilter, AgeGroupFilter = Model.AgeGroupFilter, GenderFilter = Model.GenderFilter, sortField = Model.SortField, sortOrder = Model.SortOrder })">
+                                                        »
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </nav>
+
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+@section mediqu_style
+{
+    <style>
+
+        body{
+    background:#dcdcdc;
+    margin-top:20px;}
+
+
+        .widget-26 {
+            color: #3c4142;
+            font-weight: 400;
+        }
+
+            .widget-26 tr:first-child td {
+                border: 0;
+            }
+
+            .widget-26 .widget-26-job-emp-img img {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+            }
+
+            .widget-26 .widget-26-job-title {
+                min-width: 50px;
+            }
+
+                .widget-26 .widget-26-job-title a {
+                    font-weight: 400;
+                    font-size: 0.875rem;
+                    color: #3c4142;
+                    line-height: 1.5;
+                }
+
+
+                .widget-26 .widget-26-job-title .employer-name {
+                    margin: 0;
+                    line-height: 1.5;
+                    font-weight: 400;
+                    color: #3c4142;
+                    font-size: 0.8125rem;
+                    color: #3c4142;
+                }
+
+
+                .widget-26 .widget-26-job-title .time {
+                    font-size: 12px;
+                    font-weight: 400;
+                }
+
+            .widget-26 .widget-26-job-info {
+                min-width: 100px;
+                font-weight: 400;
+                padding: .5rem;
+                display: inline-flex;
+                white-space: nowrap;
+                border-radius: 15px;
+            }
+
+                .widget-26 .widget-26-job-info p {
+                    line-height: 1.5;
+                    color: #3c4142;
+                    font-size: 0.8125rem;
+                }
+
+
+            .widget-26 .widget-26-job-salary {
+                min-width: 20px;
+                font-weight: 400;
+                color: #3c4142;
+                font-size: 0.8125rem;
+                padding: .5rem;
+                display: inline-flex;
+                border-radius: 15px;
+            }
+
+        .device-name:after {
+            content: "";
+            display: block; /* This will act like a <br> after every .device-name element */
+        }
+
+
+            .widget-26 .widget-26-job-category {
+                padding: .5rem;
+                display: inline-flex;
+                white-space: nowrap;
+                border-radius: 15px;
+            }
+
+
+        .bg-soft-base {
+            background-color: #e1f5f7;
+        }
+
+        .bg-soft-warning {
+            background-color: #fff4e1;
+        }
+
+        .bg-soft-success {
+            background-color: #d1f6f2;
+        }
+
+        .bg-soft-danger {
+            background-color: #fedce0;
+        }
+
+        .bg-soft-info {
+            background-color: #d7efff;
+        }
+
+
+        .search-form {
+            width: 80%;
+            margin: 0 auto;
+            margin-top: 1rem;
+        }
+
+            .search-form input {
+                height: 100%;
+                background: transparent;
+                border: 0;
+                display: block;
+                width: 100%;
+                padding: 1rem;
+                height: 100%;
+                font-size: 1rem;
+            }
+
+            .search-form select {
+                background: transparent;
+                border: 0;
+                padding: 1rem;
+                height: 100%;
+                font-size: 1rem;
+            }
+
+                .search-form select:focus {
+                    border: 0;
+                }
+
+            .search-form button {
+                height: 100%;
+                width: 100%;
+                font-size: 1rem;
+            }
+
+                .search-form button svg {
+                    width: 24px;
+                    height: 24px;
+                }
+
+        .search-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-margin {
+            margin-bottom: 1.875rem;
+        }
+
+        .card {
+            border: 0;
+            box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -webkit-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -moz-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+            -ms-box-shadow: 0px 0px 10px 0px rgba(82, 63, 105, 0.1);
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #ffffff;
+            background-clip: border-box;
+            border: 1px solid #e6e4e9;
+            border-radius: 8px;
+        }
+
+        .pagination .page-item .page-link:hover i, .pagination .page-item .page-link span {
+            color: #000 !important;
+        }
+
+        /* Button hover effect */
+        .btn-smooth:hover {
+            background-color: white;
+            color: #4CAF50;
+            box-shadow: 0 5px #666;
+            transform: translateY(-2px);
+        }
+
+        /* Button active/focus effect */
+        .btn-smooth:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+
+    </style>
+}
+
+
+@section mediqu_script
+{
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+    <script src="~/mediqu/js/module3/empty.js"></script>
+
+}
+

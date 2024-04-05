@@ -1,0 +1,403 @@
+@{
+ViewData["Title"] = "Message Template Configuration";
+ViewData["Heading"] = "Message Template Configuration";
+}
+<!--**********************************
+   Content body start
+   ***********************************-->
+<div class="content-body default-height">
+   <div class="container-fluid">
+      <div id="templatelist">
+         <div id="templateListHeader">
+            <button onclick="showAddEditor()" class="btn btn-primary btn-sm mb-1">Add template</button>
+            <h1>Template List</h1>
+         </div>
+         <div id="templateListContent">
+         </div>
+      </div>
+      <div id="templateEditor" style="display:none">
+         <button onclick="hideEditor()" class="btn btn-outline-secondary btn-sm mb-1">&lt Back to list</button>
+         <h1> Template editor </h1>
+         <!--- Todo: Empty check -->
+         <form id="userinfo">
+            <div>
+               <label for="name">Name</label>
+               <input type="text" id="name" name="Name" value=""/>
+            </div>
+            <div>
+               <label for="subject">Subject</label>
+               <input type="text" id="subject" name="Subject" value=""/>
+            </div>
+            <div>
+               <label for="message">Message</label>
+               <textarea id="message" name="Message"></textarea>
+            </div>
+            <input id="submitTemplate" type="submit" value="Submit" class="btn btn-success btn-sm mb-1"/>
+            <button id="deleteTempalte" style="display:none" class="btn btn-danger btn-sm mb-1">Delete</button>
+         </form>
+         <hr/>
+         <h2>List of devices and biomarkers</h2>
+         <div id="device-list"></div>
+         <biomarker-tag attribute="hey"></biomarker-tag>
+         <!--**********************************
+            This is the template. Copy everything from here (CTRL A + CTRL C then CTRL V.  Then start putting ur HTML code here within the TWO DIV Class.
+            ***********************************-->
+      </div>
+   </div>
+</div>
+<!--**********************************
+   Content body end
+   ***********************************-->
+@section mediqu_style
+{
+<!-- Start Page Level CSS -->
+<!-- End Page Level CSS -->
+}
+@section mediqu_script
+{
+  <!--**********************************
+  Scripts
+  ***********************************-->
+  <!-- Required vendors -->
+  <script src="~/mediqu/vendor/global/global.min.js"></script>
+  <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+  <!-- Apex Chart -->
+  <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+  <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+  <script src="~/mediqu/js/custom.min.js"></script>
+  <script src="~/mediqu/js/deznav-init.js"></script>
+  <script src="~/mediqu/js/deznav-init.js"></script>
+  <script src="~/mediqu/js/module3/Text Editor Libraries/tinymce/tinymce.min.js"></script>
+  <script>
+   loadMessageTemplates()
+     async function fetchData() {
+       try {
+         const response = await fetch('/MessageTemplate/GetDeviceList/');
+         const data = await response.json();
+         return data;
+       } catch (error) {
+         console.error('Error fetching data:', error);
+       }
+     }
+     
+     function loadIntoEditors(name, subject,  message, id){
+       document.getElementById("name").value = name
+       document.getElementById("subject").value = subject
+       tinymce.get('message').setContent(message)
+       //document.getElementById("templateId").value = id
+       showEditEditor(Number(id))
+     }
+     
+     function hideEditor(){
+         document.getElementById("templatelist").style.display = "block";
+         document.getElementById("templateEditor").style.display = "none";
+         
+         document.getElementById("name").value = ""
+         document.getElementById("subject").value = ""
+         tinymce.get('message').setContent("")
+         
+     }
+     
+     function showAddEditor(){
+     
+     
+       document.getElementById("templateEditor").style.display = "block";
+       document.getElementById("templatelist").style.display = "none";
+       
+       var deleteBtn = document.getElementById("deleteTempalte");
+       var submitBtn = document.getElementById("submitTemplate");
+       
+        deleteBtn.style = "display: none";
+              submitBtn.innerText = "Submit"
+              deleteBtn.onclick = function (){
+              }
+              submitBtn.onclick = function (){
+                addMessageTemplate()
+              }
+     }
+     
+     
+     
+     function showEditEditor(templateId){
+
+       document.getElementById("templateEditor").style.display = "block";
+       document.getElementById("templatelist").style.display = "none";
+       
+       var deleteBtn = document.getElementById("deleteTempalte");
+       var submitBtn = document.getElementById("submitTemplate");
+
+         deleteBtn.style = "display: block";
+         deleteBtn.onclick = function (){
+           deleteMessageTemplate(templateId)
+           loadMessageTemplates()
+         }
+         submitBtn.innerText = "Submit changes"
+         submitBtn.onclick = function (){
+           editMessageTemplate(templateId)
+         }
+       
+     }
+     
+     // Function to create buttons for attributes
+     function createButtons(devices) {
+       const buttonsContainer = document.getElementById('device-list');
+       devices.forEach(device => {
+   
+         const card = document.createElement('card')
+         card.className = "card"
+         const cardHeader = document.createElement("div");
+         cardHeader.className = "card-header"
+         cardHeader.style.padding = "0px"
+         cardHeader.id = "headerDevice" + device.id;
+         const h5mb0 = document.createElement("div");
+         h5mb0.className = "mb-0"
+         const headButton = document.createElement("button")
+         headButton.className = "btn btn-link"
+         headButton.setAttribute("data-toggle","collapse")
+         headButton.setAttribute("data-target","#collapse"+device.id)
+         headButton.setAttribute("aria-expanded","true")
+         headButton.setAttribute("aria-controls","collapse" + device.id)
+         headButton.innerText = device.name
+         h5mb0.appendChild(headButton)
+         cardHeader.appendChild(h5mb0)
+         card.appendChild(cardHeader)
+         
+         const collapseDiv = document.createElement("div")
+         collapseDiv.className = "collapse show"
+         collapseDiv.setAttribute("aria-labelledby","headerDevice"+device.id)
+         collapseDiv.setAttribute("data-parent","#device-list")
+         collapseDiv.id = "collapse"+device.id
+         const cardBody = document.createElement("div")
+         cardBody.className = "card-body"
+         cardBody.style.padding = "1em"
+         
+         const attributesList2 = document.createElement('ul');
+         device.attributes.forEach(attribute => {
+             const attributeButton = document.createElement('button');
+                         attributeButton.textContent = attribute.name;
+                         attributeButton.className = "btn btn-info btn-sm mb-1"
+                         attributeButton.setAttribute('data-unit', attribute.unit);
+                         attributeButton.addEventListener('click', () => {
+                           insertCustomTag(`${device.name.substring(0,15)}: ${attribute.name}: 123${attribute.unit}`, device.id, attribute.id)
+                         });
+                   
+                         const listItem = document.createElement('li');
+                         listItem.appendChild(attributeButton);
+                         attributesList2.appendChild(listItem);
+           
+           }
+         )
+         cardBody.appendChild(attributesList2)
+         collapseDiv.appendChild(cardBody)
+         card.appendChild(collapseDiv)
+         buttonsContainer.appendChild(card)
+         
+   
+         });
+     }
+     
+     // Main function to fetch data and create buttons
+     async function main() {
+       const data = await fetchData();
+       console.log(`I got ${JSON.stringify(data)}`);
+       data.forEach(device => {
+         console.log(`Device is ${JSON.stringify(device)}`);
+         console.log(`Attribute is ${JSON.stringify(device.attributes)}`);
+         
+       });
+       createButtons(data);
+     }
+     
+     // Call the main function to start the process
+     main();
+   
+   function getContent(){
+       //console.log(tinymce.get("message").getContent().replace(/<s><\/s>/g, ''));
+       var content = tinymce.get("message").getContent()
+       console.log(content);
+       return content;
+   
+   }
+     tinymce.init({
+       selector: 'textarea',  // change this value according to your HTML
+       plugins: 'a_tinymce_plugin',
+       branding: false,
+       formats: {
+               bold : {inline : 'b' },  
+               italic : {inline : 'i' },
+               underline : {inline : 'u'},
+               strikethrough: {inline: 's'}
+           },
+           content_style: `
+         input {
+           font-size: 10pt;
+         }`,
+       a_plugin_option: true,
+       a_configuration_option: 400,
+       promotion: false,
+       //extended_valid_elements:"i[id|class|style],em,mycustomblock[id],mycustominline",
+       custom_elements : 'biomarker-tag',
+       //toolbar: 'BoldButton',
+       valid_elements: "b,i,b/strong,i/em,s,input,p",
+       extended_valid_elements: "input[value|device-data|disabled|tabindex|size|style]",
+       toolbar: "bold italic underline strikethrough",
+     });
+   function insertCustomTag(text, deviceid, biomarkerid){
+       tinymce.get('message').insertContent(`<input disabled device-data='${deviceid},${biomarkerid}' value='${text}' style="width:${text.length*10/2}pt"></input>`);
+   }
+   async function testSendData(){
+     const data = {
+       Name: "Name",
+       Subject: "Subject",
+       Message: "Message"
+     }
+     const formData = new FormData()
+     formData.append("Name","Name");
+     formData.append("Subject","Subject");
+     formData.append("Message","Message");
+     const response = fetch("/MessageTemplate/AddMessageTemplate/",
+     {
+       method: "post",
+       body: formData
+     }
+     )
+     console.log(await response)
+   }
+   async function deleteMessageTemplate(id){
+       try{
+       const response = await fetch("/MessageTemplate/DeleteMessageTemplate/", 
+                     {
+                       method: "POST",
+                                       headers: {
+                                             'Accept': 'application/json',
+                                             'Content-Type': 'application/json'
+                                           },
+                                       // Set the FormData instance as the request body
+                                       body: id
+                       
+                     })
+                     loadMessageTemplates()
+                     hideEditor()
+       }
+                     catch (e) {
+                       alert("loading error")
+                     }
+                     }
+   
+   
+   async function loadMessageTemplates(){
+     try{
+     document.getElementById("templateListContent").innerHTML = "";
+     const response = await fetch("/MessageTemplate/GetMessageTemplates/", 
+                   {
+                     method: "GET"
+                   });
+                   console.log(await response.ok);
+                   if (!response.ok){
+                    await (response.text().then(text => { throw new Error(text) }))
+                   }
+                   var data = await response.json();
+                   for (var k in data){
+                     const i = data[k]
+                     console.log(i)
+                     
+                     var card = document.createElement("div")
+                     card.className = "card"
+                     var cardBody = document.createElement("div")
+                     cardBody.className = "card-body"
+                     var cardTitle = document.createElement("h5")
+                     cardTitle.className = "card-title"
+                     var button = document.createElement("a")
+                     button.className = "card-link"
+                     button.innerText = "Edit"
+                     button.onclick = function(){
+                       loadIntoEditors(i.name, i.subject, i.message, i.id)
+                     }
+                     var deleteButton = document.createElement("a")
+                     deleteButton.className = "card-link"
+                     deleteButton.innerText = "Delete"
+                     deleteButton.onclick = function(){
+                       console.log(`You shall delete ${i.id}, named ${i.name}`)
+                       deleteMessageTemplate(Number(i.id))
+                     }
+                     card.style.width = "18rem"
+                     cardTitle.innerText = i.name
+                     cardBody.appendChild(cardTitle)
+                     cardBody.appendChild(button)
+                     cardBody.appendChild(deleteButton)
+                     card.appendChild(cardBody)
+                     document.getElementById("templateListContent").appendChild(card)
+                  
+                     }
+                   }
+                   catch (e) {
+                     alert("loading error")
+                   }
+                   }
+                  
+                   
+         const form = document.querySelector("#userinfo");
+   
+         async function addMessageTemplate(){
+           const formData = new FormData(form);
+   
+           formData.set("Message", getContent());
+                   
+                     try {
+                       
+                         const response = await fetch("/MessageTemplate/AddMessageTemplate", 
+                         {
+                           method: "POST",
+                           body: formData,
+                         });
+                         console.log(await response.ok);
+                                                             if (!response.ok){
+                                                               await (response.text().then(text => { throw new Error(text) }))
+                                                             }
+                         loadMessageTemplates();
+                         hideEditor();
+                       
+         }
+         catch (e) {
+                       console.error(e.message);
+                       alert(e.message)
+                    
+                     }
+         }
+         async function editMessageTemplate(id){
+           const formData = new FormData(form);
+           formData.set("Id", id)
+              
+                      formData.set("Message", getContent());
+                              
+                                try {
+                                  
+                                    const response = await fetch("/MessageTemplate/EditMessageTemplate", 
+                                    {
+                                      method: "POST",
+                                      body: formData,
+                                    });
+                                    console.log(await response.ok);
+                                    if (!response.ok){
+                                      await (response.text().then(text => { throw new Error(text) }))
+                                    }
+                                    loadMessageTemplates();
+                                    hideEditor();
+                                  
+                    }
+                    catch (e) {
+                                  console.error(e);
+                                  alert(e)
+                               
+                                }
+         }
+         
+         
+         // Take over form submission
+         form.addEventListener("submit", (event) => {
+           event.preventDefault();
+           //sendData();
+         });
+     
+</script>
+}

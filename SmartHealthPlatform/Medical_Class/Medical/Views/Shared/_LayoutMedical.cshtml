@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <partial name="medical/_Meta" />
+    <title>[@ViewBag.Title] Medical Hospital</title>
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/mediqu/images/favicon.png">
+    @RenderSection("mediqu_style", false)
+    <!-- Global CSS -->
+    <link href="~/mediqu/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+    <!-- End Global CSS -->
+    <!-- Bottom CSS -->
+    <link class="main-css" href="~/mediqu/css/style.css" rel="stylesheet">
+    <link href="https://cdn.lineicons.com/2.0/LineIcons.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+   
+</head>
+<body>
+
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+        <partial name="medical/_NevHeader" />
+        <partial name="medical/_Header" />
+        <partial name="medical/_Sidebar" />
+        @RenderBody()
+        <partial name="medical/_Footer" />
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+    @RenderSection("mediqu_script", false)
+</body>
+</html>

@@ -1,0 +1,707 @@
+﻿@{
+	ViewData["Title"] = "Metabolic Health Analysis";
+	ViewData["Heading"] = "Metabolic Health Analysis";
+}
+
+@* Declare the model type for the summary (In this case, it is a string temporarily) *@
+@model Medical.ViewModel.Module_3.P1_1.MetabolicHealthComponent.MetabolicHealthAnalysisDataViewModel
+@{
+	var patientName = Model.WeeklyMeasurements.FirstOrDefault()?.PatientName ?? "N/A";
+	var patientAge = Model.WeeklyMeasurements.FirstOrDefault()?.Age ?? 0;
+	var totalReadings = Model.WeeklyMeasurements.Count;
+	var latestBMR = Model.WeeklyMeasurements.LastOrDefault()?.BMR ?? 0;
+	var latestReading = Model.WeeklyMeasurements.LastOrDefault();
+}
+
+<!--**********************************
+	Content body start
+***********************************-->
+<div class="content-body default-height default-height">
+	<!-- row -->
+	<div class="container-fluid">
+
+
+		<div class="form-head d-flex mb-3 mb-md-3 align-items-start flex-wrap justify-content-between">
+
+
+			<!-- Welcome Message -->
+
+			<div class="me-auto d-lg-block">
+				<h3 class="text-primary font-w600">Welcome, Doctor!</h3>
+				<p class="mb-0">Explore the Metabolic Health Analysis</p>
+			</div>
+
+
+			<!-- Back to Patient List button -->
+
+			<div class="col-lg-3 d-flex justify-content-end">
+				<a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+					<i class="fas fa-search"></i> Return to Searching
+				</a>
+			</div>
+
+
+		</div>
+
+
+
+		<!-- Stat Cards Row -->
+		<div class="row">
+
+			<!-- Patient Name -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-primary">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-user"></i> <!-- Changed to a more standard user icon -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 ">Patient Name</p>
+								<h2 class="text-white dynamic-text">@patientName</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Age -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-success">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-hourglass-half"></i> <!-- Represents time or age -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 text-nowrap">Age</p>
+								<h2 class="text-white dynamic-text1">@patientAge</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Total Readings -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-danger">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-chart-line"></i> <!-- Suggests data or readings over time -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Total Readings</p>
+								<h2 class="text-white dynamic-text1">@totalReadings</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest BMR -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest BMR</p>
+								<h2 class="text-white dynamic-text1">@latestBMR.ToString("0.0")</h2> <!-- Formatted to 2 decimal places -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Device Readings -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="app-stat card" style="background-color: #FFFFE0;">
+					<!-- Set background color to light yellow -->
+					<div class="card-header border-0 pb-0">
+						<h4 class="card-title text-black">Latest Metabolic Health Readings</h4>
+					</div>
+					<div class="card-body p-4">
+						<div class="media flex-wrap">
+							<!-- Stats Content -->
+							<div class="card-body pt-2 text-black">
+								<!-- Set text color to black -->
+								@if (@latestReading != null)
+								{
+									<ul>
+										<li>Weight: @latestReading.Weight.ToString("0.0")kg</li>
+										<li>Height: @latestReading.Height.ToString("0.0")cm</li>
+										<li>BMI: @latestReading.BMI.ToString("0.0")</li>
+										<li>BMR: @latestReading.BMR.ToString("0.0")kcal</li>
+										<li>Body Fat Percentage: @latestReading.BodyFatPercentage.ToString("0.00")%</li>
+										<li>Visceral Fat Rating: @latestReading.VisceralFatRating</li>
+										<li>Protein: @latestReading.Protein.ToString("0.0")g</li>
+
+									</ul>
+								}
+								else {
+									<p>No data available.</p>
+								}
+
+
+
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<!-- BMI and Body Fat Percentage Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">BMI and Body Fat Percentage Chart</h4>
+					</div>
+					<div class="card-body">
+						<!-- Create canvas element for the chart -->
+						<canvas id="bmiBodyFatChart" width="400" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+
+
+			<!-- BMR Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">BMR Chart</h4>
+					</div>
+					<div class="card-body">
+						<!-- Create canvas element for the chart -->
+						<canvas id="bmrChart" width="400" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- BMI and Visceral Fat Rating Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">BMI and Visceral Fat Rating Chart</h4>
+					</div>
+					<div class="card-body">
+						<!-- Create canvas element for the chart -->
+						<canvas id="bmiVisceralFatChart" width="400" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Body Fat Percentage and Protein Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">Body Fat Percentage and Protein Chart</h4>
+					</div>
+					<div class="card-body">
+						<!-- Create canvas element for the chart -->
+						<canvas id="bodyFatProteinChart" width="400" height="150"></canvas>
+					</div>
+				</div>
+			</div>
+
+
+
+			<!-- Display the Metabolic Health Trends Summary -->
+			<div>
+				<h2>Metabolic Health Trends</h2>
+				@Html.Raw(Model.Summary.MetabolicTrendsSummary)
+			</div>
+
+			<div style="margin-bottom: 20px;"></div>
+
+			<!-- Display the Metabolic Health Analysis Summary -->
+			<div>
+				<!-- Display summary properties here -->
+				<h2>Metabolic Health Assessments</h2>
+
+				<div class="assessment-list">
+					@foreach (var assessment in Model.Summary.MetabolicAnalysisSummary)
+					{
+						<div class="assessment-item">
+							<h4 class="assessment-title">@assessment.reading.Timestamp.ToString("d MMMM yyyy, dddd")</h4>
+							<div class="assessment-details">
+
+								@if (assessment.reading != null)
+								{
+									<h4>Readings</h4>
+									<ul>
+										<li>Weight: @assessment.reading.Weight.ToString("0.0")kg</li>
+										<li>Height: @assessment.reading.Height.ToString("0.0")cm</li>
+										<li>BMI: @assessment.reading.BMI.ToString("0.0")</li>
+										<li>BMR: @assessment.reading.BMR.ToString("0.0")kcal</li>
+										<li>Body Fat Percentage: @assessment.reading.BodyFatPercentage.ToString("0.0")%</li>
+										<li>Visceral Fat Rating: @assessment.reading.VisceralFatRating</li>
+										<li>Protein: @assessment.reading.Protein.ToString("0.0")g</li>
+										
+									</ul>
+								}
+
+								<br />
+
+								@if (assessment.MetabolicRisks != null)
+								{
+									<h4>Risks</h4>
+									<ul>
+										@foreach (var risk in assessment.MetabolicRisks)
+										{
+											<li>Risk Type: @risk.MetabolicRiskType</li>
+											<li>Risk Level: @risk.MetabolicRisk</li>
+										}
+									</ul>
+								}
+
+								<br />
+
+								@if (assessment.MetabolicRecommndations != null)
+								{
+									<h4>Recommendations</h4>
+									<ul>
+										@foreach (var recommendation in assessment.MetabolicRecommndations)
+										{
+											<li>Cardio Fitness: <br /> @recommendation.CardioFitnessRecommendation </li>
+											<br />
+
+											<li>@recommendation.ProteinIntakeRecommendation</li>
+											<br />
+
+											<li>Risk Recommendation: <br /> @recommendation.RiskRecommendation</li>
+										}
+									</ul>
+								}
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			<!-- For this Section to work refer to the end of this code template, read the instruction -->
+			<!-- Patient Notes -->
+			<div class="container">
+				<div class="col-xl-12 col-lg-12" id="existingNotesSection">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Existing Notes</h4>
+							<!-- Button to Show Add Notes Section -->
+							<button type="button" class="btn btn-success" id="showAddNote">Add Note</button>
+						</div>
+						<ul class="list-group list-group-flush">
+
+							<ul class="list-group list-group-flush" id="existingNotesList">
+								<!-- Existing notes will be dynamically filled here -->
+							</ul>
+
+						</ul>
+					</div>
+				</div>
+
+				<!-- Add Notes Section (Initially Hidden) -->
+				<div class="col-xl-12 col-lg-12" id="addNoteSection" style="display: none;">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Add Note</h4>
+							<button type="button" class="btn btn-secondary" id="cancelAddNote">Cancel</button>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<form id="addNoteForm">
+									<div class="mb-3">
+										<label for="userName" class="form-label">Your Name</label>
+										<input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name">
+									</div>
+									<div class="mb-3">
+										<label for="note" class="form-label">Note</label>
+										<textarea class="form-control" rows="4" id="note" name="note" placeholder="Enter your note here..."></textarea>
+									</div>
+									<button type="button" class="btn btn-primary" onclick="submitNote()">Submit Note</button>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+	</div>
+</div>
+<!--**********************************
+	Content body end
+***********************************-->
+@section mediqu_style
+{
+
+	<style>
+		.text-black {
+			color: black;
+		}
+
+		.dynamic-text {
+			font-size: 14px;
+		}
+
+		.dynamic-text1 {
+			font-size: 20px;
+		}
+		/* Smaller font size for dynamic text */
+
+			/* Style for the assessment items */
+			.assessment-item {
+				border: 1px solid #ccc;
+				margin-bottom: 10px;
+				padding: 10px;
+				transition: all 0.3s ease;
+			}
+
+			/* Style for the assessment titles */
+			.assessment-title {
+				cursor: pointer;
+				font-weight: bold;
+			}
+
+			/* Style for the assessment details */
+			.assessment-details {
+				display: none;
+				margin-top: 10px;
+			}
+
+			/* Hover effect for the assessment items */
+			.assessment-item:hover {
+				background-color: #f5f5f5;
+				box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+			}
+	</style>
+
+
+	<!-- Start Page Level CSS -->
+	<link href="~/mediqu/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
+	<link href="~/mediqu/vendor/chartist/css/chartist.min.css" rel="stylesheet">
+	<!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+	<!--**********************************
+		Scripts
+	***********************************-->
+	<!-- Required vendors -->
+	<script src="~/mediqu/vendor/global/global.min.js"></script>
+	<script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+	<!-- Apex Chart -->
+	<script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+
+	<!-- Dashboard 1 -->
+	<script src="~/mediqu/js/dashboard/dashboard-1.js"></script>
+	<script src="~/mediqu/js/custom.min.js"></script>
+	<script src="~/mediqu/js/deznav-init.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+
+		// Get the weekly measurements from the model
+		var weeklyMeasurements = @Html.Raw(Json.Serialize(Model.WeeklyMeasurements));
+
+		if (weeklyMeasurements && Chart) { 
+			// Extract data for the chart
+			var labels = weeklyMeasurements.map(measurement => new Date(measurement.timestamp).toLocaleString());
+			var bmiData = weeklyMeasurements.map(measurement => measurement.bmi);
+			var bodyFatData = weeklyMeasurements.map(measurement => measurement.bodyFatPercentage);
+			var bmrData = weeklyMeasurements.map(measurement => measurement.bmr);
+			var proteinData = weeklyMeasurements.map(measurement => measurement.protein);
+			var visceralFatData = weeklyMeasurements.map(measurement => measurement.visceralFatRating);
+
+			// Create a chart context
+			var ctxBmiBodyFat = document.getElementById('bmiBodyFatChart').getContext('2d');
+			var ctxBmr = document.getElementById('bmrChart').getContext('2d');
+			var ctxBmiVisceralFat = document.getElementById('bmiVisceralFatChart').getContext('2d');
+			var ctxBodyFatProtein = document.getElementById('bodyFatProteinChart').getContext('2d');
+
+			// BMI and Body Fat Percentage Chart
+			var metabolicHealthChart = new Chart(ctxBmiBodyFat, {
+				type: 'line',
+				data: {
+					labels: labels,
+					datasets: [{
+						label: 'BMI',
+						data: bmiData,
+						backgroundColor: 'rgba(75, 192, 192, 0.2)',
+						borderColor: 'rgba(75, 192, 192, 1)',
+						borderWidth: 1
+					}, {
+						label: 'Body Fat Percentage',
+						data: bodyFatData,
+						backgroundColor: 'rgba(255, 99, 132, 0.2)',
+						borderColor: 'rgba(255, 99, 132, 1)',
+						borderWidth: 1
+					}]
+				},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true,
+							responsive: true,
+							maintainAspectRatio: false
+						}
+					}
+				}
+			});
+
+			// BMR Chart
+			var bmrChart = new Chart(ctxBmr, {
+				type: 'line',
+				data: {
+					labels: labels,
+					datasets: [{
+						label: 'BMR',
+						data: bmrData,
+						backgroundColor: 'rgba(54, 162, 235, 0.2)',
+						borderColor: 'rgba(54, 162, 235, 1)',
+						borderWidth: 1
+					}]
+				},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true,
+							responsive: true,
+							maintainAspectRatio: false
+						}
+					}
+				}
+			});
+
+
+				// BMI and Visceral Fat Rating Chart
+				var bmiVisceralFatChart = new Chart(ctxBmiVisceralFat, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'BMI',
+							data: bmiData,
+							backgroundColor: 'rgba(153, 102, 255, 0.2)',
+							borderColor: 'rgba(153, 102, 255, 1)',
+							borderWidth: 1
+						}, {
+							label: 'Visceral Fat Rating',
+							data: visceralFatData,
+							backgroundColor: 'rgba(255, 159, 64, 0.2)',
+							borderColor: 'rgba(255, 159, 64, 1)',
+							borderWidth: 1
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+								responsive: true,
+								maintainAspectRatio: false
+							}
+						}
+					}
+				});
+
+				// Body Fat Percentage and Protein Intake Chart
+				var bodyFatProteinChart = new Chart(ctxBodyFatProtein, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Body Fat Percentage',
+							data: bodyFatData,
+							backgroundColor: 'rgba(255, 205, 86, 0.2)',
+							borderColor: 'rgba(255, 205, 86, 1)',
+							borderWidth: 1
+						}, {
+							label: 'Protein Intake',
+							data: proteinData,
+							backgroundColor: 'rgba(75, 192, 192, 0.2)',
+							borderColor: 'rgba(75, 192, 192, 1)',
+							borderWidth: 1
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+								responsive: true,
+								maintainAspectRatio: false
+							}
+						}
+					}
+				});
+
+		} 
+		else 
+		{
+				console.log("Chart.js or data not available. Cannot initialize chart.");
+		}
+
+			
+			// Function for displaying list of assessments
+
+			$(document).ready(function () {
+				$('.assessment-title').click(function () {
+					$(this).siblings('.assessment-details').toggle();
+				});
+			});
+
+
+		/* Make sure you are able to get PatientID and PatientName from your viewmodel*/
+
+		/* then do the following below */
+
+		/* Copy the function code from AirPulseOximeterAnalysis for the Patient Notes function to work over here...*/
+
+			/*-------------------------Function for Patient Notes----------------*/
+
+			$(document).ready(function () {
+				var patientId = @Model.WeeklyMeasurements.FirstOrDefault()?.PatientID ?? 0;
+
+				// Show existing notes list by default
+				refreshNotesList(patientId);
+
+				$('#showAddNote').click(function () {
+					$('#existingNotesSection').hide(); // Hide the existing notes section
+					$('#addNoteSection').show(); // Show the add notes section
+				});
+
+				$('#cancelAddNote').click(function () {
+					$('#addNoteSection').hide(); // Hide the add notes section
+					$('#existingNotesSection').show(); // Show the existing notes section again
+					// No need to refresh notes list here as we assume no changes were made
+				});
+			});
+
+
+
+
+			function refreshNotesList(patientId) {
+				fetch(`/PatientNotes/GetNotesByPatient/${patientId}`)
+					.then(response => response.json())
+					.then(data => {
+						const notesList = document.getElementById('existingNotesList');
+						notesList.innerHTML = ''; // Clear existing notes
+						data.forEach(note => {
+							const noteElement = document.createElement('li');
+							noteElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center'); // Ensure flex layout for right alignment
+
+
+							// Note content
+							const noteContent = document.createElement('span');
+							// Format timestamp
+							const formattedTimestamp = new Date(note.timestamp).toLocaleString();
+							// Construct readable note content
+							const readableContent = `Doctor ${note.userName} (${formattedTimestamp}) - ${note.note}`;
+
+							noteContent.textContent = readableContent;
+							noteElement.appendChild(noteContent);
+
+
+							// Create a delete button
+							const deleteBtn = document.createElement('button');
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm'); // Bootstrap classes for styling
+							deleteBtn.onclick = () => deleteNote(note.id, patientId);
+
+							noteElement.appendChild(deleteBtn); // Add delete button to the note element
+							notesList.appendChild(noteElement);
+						});
+					})
+					.catch(error => console.error('Error refreshing notes:', error));
+			}
+
+
+
+
+			function deleteNote(noteId, patientId) {
+				fetch(`/PatientNotes/DeleteNote/${noteId}`, {
+					method: 'DELETE'
+				})
+					.then(response => {
+						if (response.ok) {
+							console.log('Note deleted successfully');
+							refreshNotesList(patientId); // Refresh the list to show changes
+						} else {
+							throw new Error('Failed to delete note');
+						}
+					})
+					.catch(error => console.error('Error deleting note:', error));
+			}
+
+
+
+
+			function submitNote() {
+				const userName = document.getElementById('userName').value;
+				const noteText = document.getElementById('note').value;
+				const patientId = @Model.WeeklyMeasurements.FirstOrDefault()?.PatientID ?? 0;
+				const patientName = '@Model.WeeklyMeasurements.FirstOrDefault()?.PatientName';
+
+				const noteData = {
+					PatientID: patientId,
+					PatientName: patientName,
+					UserName: userName,
+					Note: noteText,
+					Timestamp: new Date().toISOString(),
+				};
+
+				// Log the noteData object to the console
+				console.log('Submitting note with data:', noteData);
+
+				fetch('/PatientNotes/SavePatientNote', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(noteData),
+				})
+					.then(response => {
+						if (!response.ok) {
+							console.error('Error status:', response.status);
+							if (response.headers.get("Content-Type")?.includes("application/json")) {
+								return response.json().then(errorData => {
+									console.error('Error details:', errorData);
+									throw new Error(`Server responded with ${response.status}: ${errorData.message}`);
+								});
+							} else {
+								throw new Error(`Server responded with ${response.status}`);
+							}
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log('Note saved:', data);
+						document.getElementById('addNoteForm').reset();
+						$('#addNoteSection').hide();
+						$('#existingNotesSection').show();
+						refreshNotesList(patientId);
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+			}
+
+	</script>
+
+
+
+
+}

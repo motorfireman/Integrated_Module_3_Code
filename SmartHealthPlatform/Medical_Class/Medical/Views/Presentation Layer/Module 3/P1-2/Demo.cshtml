@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "Demo Control Panel";
+    ViewData["Heading"] = "Demo Control Panel";
+}
+
+
+<!--**********************************
+Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+        
+        <div id="login-container" class="d-flex col-sm-3 column-gap-3 mb-4 d-none">
+            <input type="number" class="form-control" placeholder="User ID" id="user-id-field"/>
+            <button class="btn btn-primary" id="login-button">Login</button>
+        </div>
+        
+        <div id="user-details-container" class="mb-4">
+            <p id="user-name"></p>
+            <p id="user-role"></p>
+            <button class="btn btn-primary" id="logout-button">Logout</button>
+        </div>
+        
+        <div id="alert-trigger-container">
+            
+            <select class="bg-white rounded d-block mb-4 col-sm-5" id="device-selector">
+                <option selected>Select Device</option>
+            </select>
+
+            <select class="bg-white rounded d-block mb-4 col-sm-5" id="biomarker-selector" disabled>
+                <option selected>Select Biomarker</option>
+            </select>
+            
+            
+            <div class="d-flex col-sm-4 column-gap-3 align-items-center mb-4">
+                <input type="number" class="form-control" placeholder="Reading" id="reading-field"/>
+                <p class="mb-0" id="unit-element"></p>
+            </div>
+            
+            <button class="btn btn-primary" id="upload-button">Upload</button>
+            
+        </div>
+        
+
+
+    </div>
+</div>
+<!--**********************************
+Content body end
+***********************************-->
+
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+    Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+    <script>
+    
+    const loginContainer = document.querySelector("#login-container");
+    const userDetailsContainer = document.querySelector("#user-details-container");
+    const alertTriggerContainer = document.querySelector("#alert-trigger-container");
+    const userNameElement = document.querySelector("#user-name");
+    const userRoleElement = document.querySelector("#user-role");
+    const userIdField = document.querySelector("#user-id-field");
+    const loginButton = document.querySelector("#login-button");
+    const logoutButton = document.querySelector("#logout-button");
+    const deviceSelector = document.querySelector("#device-selector");
+    const biomarkerSelector = document.querySelector("#biomarker-selector");
+    const uploadButton = document.querySelector("#upload-button");
+    const unitElement = document.querySelector("#unit-element");
+    const readingField = document.querySelector("#reading-field");
+    let firstLoad = true;
+    let biomarkerMap = null;
+    
+    const checkLogin = () => {
+        fetch("/Demo/GetUserDetails/")
+        .then(response => response.json())
+        .then(json => {
+            if (json["logged_in"] === "false") {
+                loginContainer.classList.remove("d-none");
+                userDetailsContainer.classList.add("d-none");
+                alertTriggerContainer.classList.add("d-none");
+                return;
+            }
+            loginContainer.classList.add("d-none");
+            userDetailsContainer.classList.remove("d-none");
+            alertTriggerContainer.classList.remove("d-none");
+            userNameElement.innerText = "Name: " + json["name"];
+            userRoleElement.innerText = "Role: " + json["role"];
+            updateDevices();
+        });
+    }
+    
+    const login = async () => {
+        const userId = userIdField.value;
+        await fetch("/Demo/Login/" + userId);
+        checkLogin();
+    }
+    
+    const logout = async () => {
+        await fetch("/Demo/Logout");
+        checkLogin();
+    }
+    
+    const updateDevices = () => {
+        fetch("/Demo/GetUserDevices/")
+        .then(response => response.json())
+        .then(json => {
+            deviceSelector.replaceChildren();
+            if (firstLoad) {
+                const element = document.createElement("option")
+                element.innerText = "Select Device";
+                element.value = "Select Device";
+                deviceSelector.appendChild(element);
+            }
+            json.forEach(device => {
+                const element = document.createElement("option")
+                element.innerText = device["name"];
+                element.value = device["id"];
+                deviceSelector.appendChild(element);
+            })
+            $('#device-selector').selectpicker('refresh');
+        });
+    }
+    
+    const updateBiomarkers = () => {
+        let deviceId = deviceSelector.value;
+        if (isNaN(deviceId))
+            return;
+        fetch("/Demo/GetBiomarkers/" + deviceId)
+        .then(response => response.json())
+        .then(json => {
+            biomarkerSelector.replaceChildren();
+            json.forEach(biomarker => {
+                const element = document.createElement("option")
+                element.innerText = biomarker["name"];
+                element.value = biomarker["id"];
+                biomarkerSelector.appendChild(element);
+            })
+            biomarkerMap = json;
+            biomarkerSelector.disabled = false;
+            $('#biomarker-selector').selectpicker('refresh');
+            updateUnit();
+        });
+        if (firstLoad) {
+            updateDevices();
+            firstLoad = false;
+        }
+    }
+    
+    const updateUnit = () => {
+        const biomarkerId = biomarkerSelector.value;
+        unitElement.innerText = biomarkerMap.find(b => b["id"] === Number(biomarkerId))["unit"];
+    }
+    
+    const upload = () => {
+        const biomarkerId = biomarkerSelector.value;
+        const reading = readingField.value;
+        console.log(biomarkerId);
+        console.log(reading);
+        if (isNaN(biomarkerId) || isNaN(reading) || reading === "")
+            return;
+        fetch("/Demo/UploadReading?biomarkerId=" + biomarkerId + "&reading=" + reading)
+        .then(response => {
+            if (response.ok) {
+                readingField.value = "";
+            }
+        })
+    }
+    
+    checkLogin();
+    
+    loginButton.addEventListener("click", e => login());
+    logoutButton.addEventListener("click", e => logout());
+    uploadButton.addEventListener("click", e => upload());
+    deviceSelector.addEventListener("change", e => updateBiomarkers());
+    biomarkerSelector.addEventListener("change", e => updateUnit());
+    
+    </script>
+
+}

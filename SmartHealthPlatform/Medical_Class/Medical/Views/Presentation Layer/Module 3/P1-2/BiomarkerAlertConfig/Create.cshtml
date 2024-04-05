@@ -1,0 +1,90 @@
+﻿@model Medical.Domain_Layer.Module_3.P1_2.BiomarkerAlertConfig.BiomarkerAlertConfig;
+
+@{
+    ViewData["Title"] = "Create Message Template";
+}
+
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+        <h2>Create Prescription</h2>
+
+        <form asp-action="Create">
+
+            <div style="background-color: white; padding: 20px; border-radius: 5px;">
+                <div class="form-group">
+                    <label for="UserDeviceId">UserDeviceId</label>
+                    <input asp-for="UserDeviceId" type="number" class="form-control" id="UserDeviceId" />
+                </div>
+                <div class="form-group">
+                    <label for="BiomarkerId">BiomarkerId</label>
+                    <input asp-for="BiomarkerId" type="number" class="form-control" id="BiomarkerId" />
+                </div>
+                <div class="form-group">
+                    <label for="TelegramAlertEnabled">TelegramAlertEnabled</label>
+                    <input asp-for="TelegramAlertEnabled" type="checkbox" class="form-check-input" id="TelegramAlertEnabled" />
+                </div>
+                <div class="form-group">
+                    <label for="EmailAlertEnabled">EmailAlertEnabled</label>
+                    <input asp-for="EmailAlertEnabled" type="checkbox" class="form-check-input" id="EmailAlertEnabled" />
+                </div>
+                <div class="form-group">
+                    <label for="Severity">Severity</label>
+                    <input asp-for="Severity" class="form-control" id="Unit" />
+                </div>
+                <div class="form-group">
+                                    <label for="MaxThreshold">MaxThreshold</label>
+                                    <input asp-for="MaxThreshold" type="number" class="form-control" id="MaxThreshold" />
+                                </div>
+                <div class="form-group">
+                    <label for="MinThreshold">MinThreshold</label>
+                    <input asp-for="MinThreshold" type="number" class="form-control" id="MinThreshold" />
+                </div>
+                <div class="form-group">
+                    <label for="TemplateId">TemplateId</label>
+                    <input asp-for="TemplateId" type="number" class="form-control" id="TemplateId" />
+                </div>]
+                
+                
+                <button type="submit" class="btn btn-primary">Create</button>
+            </div>
+        
+        </form>
+
+        <div style="margin-top: 10px;">
+            <a href="@Url.Action("Index", "Prescription")" class="btn btn-secondary">Back to List</a>
+        </div>
+
+    </div>
+</div>
+
+
+<!--**********************************
+    Content body end
+***********************************-->
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+
+}

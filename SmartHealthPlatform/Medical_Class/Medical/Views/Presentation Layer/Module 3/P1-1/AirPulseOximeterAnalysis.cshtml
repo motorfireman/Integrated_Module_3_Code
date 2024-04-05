@@ -1,0 +1,568 @@
+﻿@{
+	ViewData["Title"] = "Air Pulse Oximeter Analysis";
+	ViewData["Heading"] = "Air Pulse Oximeter Analysis";
+}
+
+@model List<Medical.ViewModel.Module_3.P1_1.AirPulseOximeterComponent.AirPulseOximeterAnalysisViewModel>
+@{
+	var patientName = Model.FirstOrDefault()?.PatientName ?? "N/A";
+	var patientAge = Model.FirstOrDefault()?.Age ?? 0;
+	var totalReadings = Model.Count;
+	var latestPulseRate = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.PulseRate ?? 0;
+}
+
+<!--**********************************
+	Content body start
+***********************************-->
+<div class="content-body default-height default-height">
+	<!-- row -->
+	<div class="container-fluid">
+
+		<div class="form-head d-flex mb-3 mb-md-3 align-items-start flex-wrap justify-content-between">
+
+
+			<!-- Welcome Message -->
+
+			<div class="me-auto d-lg-block">
+				<h3 class="text-primary font-w600">Welcome, Doctor!</h3>
+				<p class="mb-0">Explore the Air Pulse Oximeter Analysis Below</p>
+			</div>
+
+
+			<!-- Back to Patient List button -->
+
+			<div class="col-lg-3 d-flex justify-content-end">
+				<a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+					<i class="fas fa-search"></i> Return to Searching
+				</a>
+			</div>
+
+
+		</div>
+
+
+
+		<!-- Stat Cards Row -->
+		<div class="row">
+
+			<!-- Patient Name -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-primary">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-user"></i> <!-- Changed to a more standard user icon -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 ">Patient Name</p>
+								<h2 class="text-white dynamic-text">@patientName</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Age -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-success">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-hourglass-half"></i> <!-- Represents time or age -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 text-nowrap">Age</p>
+								<h2 class="text-white dynamic-text1">@patientAge</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Total Readings -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-danger">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-chart-line"></i> <!-- Suggests data or readings over time -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Total Readings</p>
+								<h2 class="text-white dynamic-text1">@totalReadings</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Pulse Rate -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Pulse Rate</p>
+								<h2 class="text-white dynamic-text1">@latestPulseRate.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Air Pulse Oximeter Readings -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="app-stat card" style="background-color: #FFFFE0;">
+					<!-- Set background color to light yellow -->
+					<div class="card-header border-0 pb-0">
+						<h4 class="card-title text-black">Latest Air Pulse Oximeter Readings</h4>
+					</div>
+					<div class="card-body p-4">
+						<div class="media flex-wrap">
+							<!-- Stats Content -->
+							<div class="card-body pt-2 text-black">
+								<!-- Set text color to black -->
+								@if (Model.Any()) // Check if Model contains any items
+								{
+									var latestReading = Model.Last(); // Get the last item in the list
+									<div>
+										<div class="row">
+											<div class="col-md-6">
+												<p><strong class="text-black">Perfusion Index: @latestReading.PerfusionIndex.ToString("N2") </strong></p>
+												<p><strong class="text-black">Pulse Rate: @latestReading.PulseRate.ToString("N2")</strong></p>
+												<p><strong class="text-black">SpO2: @latestReading.SpO2.ToString("N2")%</strong></p>
+												<p><strong class="text-black">TimeStamp: @latestReading.Timestamp</strong></p>
+												@foreach (var riskMessage in latestReading.RiskMessages)
+												{
+													<p class="font-weight-bold" style="color: red;">@riskMessage</p>
+												}
+
+											</div>
+										</div>
+										<hr />
+									</div>
+								}
+								else
+								{
+									<p>No data available.</p>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+			<!-- Chart.js -->
+			<!--Perfusion Index -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Perfusion Index Over Time (6 Months)</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="perfusionIndexChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Pulse Rate -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Pulse Rate Over Time (6 Months)</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="pulseRateChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- SpO2 -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">SpO2 Over Time (6 Months)</h4>
+					</div>
+
+					<div class="card-body">
+						<canvas id="spO2Chart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+			<!-- Patient Notes -->
+			<div class="container">
+				<div class="col-xl-12 col-lg-12" id="existingNotesSection">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Existing Notes</h4>
+							<!-- Button to Show Add Notes Section -->
+							<button type="button" class="btn btn-success" id="showAddNote">Add Note</button>
+						</div>
+						<ul class="list-group list-group-flush">
+
+							<ul class="list-group list-group-flush" id="existingNotesList">
+								<!-- Existing notes will be dynamically filled here -->
+							</ul>
+
+						</ul>
+					</div>
+				</div>
+
+				<!-- Add Notes Section (Initially Hidden) -->
+				<div class="col-xl-12 col-lg-12" id="addNoteSection" style="display: none;">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Add Note</h4>
+							<button type="button" class="btn btn-secondary" id="cancelAddNote">Cancel</button>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<form id="addNoteForm">
+									<div class="mb-3">
+										<label for="userName" class="form-label">Your Name</label>
+										<input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name">
+									</div>
+									<div class="mb-3">
+										<label for="note" class="form-label">Note</label>
+										<textarea class="form-control" rows="4" id="note" name="note" placeholder="Enter your note here..."></textarea>
+									</div>
+									<button type="button" class="btn btn-primary" onclick="submitNote()">Submit Note</button>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+	</div>
+</div>
+<!--**********************************
+	Content body end
+***********************************-->
+@section mediqu_style
+{
+
+	<style>
+		.text-black {
+			color: black;
+		}
+
+		.dynamic-text {
+			font-size: 14px;
+		}
+
+		.dynamic-text1 {
+			font-size: 20px;
+		}
+		/* Smaller font size for dynamic text */
+	</style>
+
+
+	<!-- Start Page Level CSS -->
+	<link href="~/mediqu/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
+	<link href="~/mediqu/vendor/chartist/css/chartist.min.css" rel="stylesheet">
+	<!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+	<!--**********************************
+		Scripts
+	***********************************-->
+	<!-- Required vendors -->
+	<script src="~/mediqu/vendor/global/global.min.js"></script>
+	<script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+	<!-- Apex Chart -->
+	<script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+
+	<!-- Dashboard 1 -->
+	<script src="~/mediqu/js/dashboard/dashboard-1.js"></script>
+	<script src="~/mediqu/js/custom.min.js"></script>
+	<script src="~/mediqu/js/deznav-init.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<script>
+
+			/*-------------------------Function for display chart.js----------------*/
+			document.addEventListener("DOMContentLoaded", function () {
+
+				var jsonData = @Html.Raw(Json.Serialize(Model));
+					console.log("jsonData:", jsonData);
+
+				// Convert timestamps to a more chart-friendly format if needed
+				var labels = jsonData.map(item => new Date(item.timestamp).toLocaleDateString());
+
+				var perfusionIndexData = jsonData.map(item => item.perfusionIndex);
+				var pulseRateData = jsonData.map(item => item.pulseRate);
+				var spO2Data = jsonData.map(item => item.spO2);
+
+				var perfusionIndexCtx = document.getElementById('perfusionIndexChart').getContext('2d');
+				var pulseRateCtx = document.getElementById('pulseRateChart').getContext('2d');
+				var spO2Ctx = document.getElementById('spO2Chart').getContext('2d');
+
+				// Perfusion Index Chart
+				new Chart(perfusionIndexCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Perfusion Index',
+							data: perfusionIndexData,
+							borderColor: 'red',
+							backgroundColor: 'rgba(255, 0, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 0.2 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+				// Pulse Rate Bar Chart with adjusted options for better spacing
+				new Chart(pulseRateCtx, {
+					type: 'bar',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Pulse Rate',
+							data: pulseRateData,
+							backgroundColor: 'rgba(0, 0, 255, 0.5)',
+							borderColor: 'blue',
+							borderWidth: 1
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: true,
+								ticks: {
+									stepSize: 10 
+								}
+							},
+							x: {
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 10 
+								}
+							}
+						},
+						maintainAspectRatio: false // Important for ensuring the defined canvas size is respected
+					}
+				});
+
+
+
+				// SpO2 Chart
+				new Chart(spO2Ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'SpO2',
+							data: spO2Data,
+							borderColor: 'green',
+							backgroundColor: 'rgba(0, 255, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 0.5 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 10 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+				});
+			});
+
+
+			/*-------------------------Function for Patient Notes----------------*/
+
+			$(document).ready(function () {
+				var patientId = @Model.FirstOrDefault()?.PatientID ?? 0;
+
+				// Show existing notes list by default
+				refreshNotesList(patientId);
+
+				$('#showAddNote').click(function () {
+					$('#existingNotesSection').hide(); // Hide the existing notes section
+					$('#addNoteSection').show(); // Show the add notes section
+				});
+
+				$('#cancelAddNote').click(function () {
+					$('#addNoteSection').hide(); // Hide the add notes section
+					$('#existingNotesSection').show(); // Show the existing notes section again
+					// No need to refresh notes list here as we assume no changes were made
+				});
+			});
+
+
+
+
+			function refreshNotesList(patientId) {
+				fetch(`/PatientNotes/GetNotesByPatient/${patientId}`)
+					.then(response => response.json())
+					.then(data => {
+						const notesList = document.getElementById('existingNotesList');
+						notesList.innerHTML = ''; // Clear existing notes
+						data.forEach(note => {
+							const noteElement = document.createElement('li');
+							noteElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center'); // Ensure flex layout for right alignment
+
+						
+							// Note content
+							const noteContent = document.createElement('span');
+							// Format timestamp
+							const formattedTimestamp = new Date(note.timestamp).toLocaleString();
+							// Construct readable note content
+							const readableContent = `Doctor ${note.userName} (${formattedTimestamp}) - ${note.note}`;
+
+							noteContent.textContent = readableContent;
+							noteElement.appendChild(noteContent);
+
+
+							// Create a delete button
+							const deleteBtn = document.createElement('button');
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm'); // Bootstrap classes for styling
+							deleteBtn.onclick = () => deleteNote(note.id, patientId); 
+
+							noteElement.appendChild(deleteBtn); // Add delete button to the note element
+							notesList.appendChild(noteElement);
+						});
+					})
+					.catch(error => console.error('Error refreshing notes:', error));
+			}
+
+
+
+
+			function deleteNote(noteId, patientId) {
+				fetch(`/PatientNotes/DeleteNote/${noteId}`, {
+					method: 'DELETE'
+				})
+					.then(response => {
+						if (response.ok) {
+							console.log('Note deleted successfully');
+							refreshNotesList(patientId); // Refresh the list to show changes
+						} else {
+							throw new Error('Failed to delete note');
+						}
+					})
+					.catch(error => console.error('Error deleting note:', error));
+			}
+
+
+
+
+			function submitNote() {
+				const userName = document.getElementById('userName').value;
+				const noteText = document.getElementById('note').value;
+				const patientId = @Model.FirstOrDefault()?.PatientID ?? 0;
+				const patientName = '@Model.FirstOrDefault()?.PatientName';
+
+				const noteData = {
+					PatientID: patientId,
+					PatientName: patientName,
+					UserName: userName,
+					Note: noteText,
+					Timestamp: new Date().toISOString(),
+				};
+
+				// Log the noteData object to the console
+				console.log('Submitting note with data:', noteData);
+
+				fetch('/PatientNotes/SavePatientNote', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(noteData),
+				})
+					.then(response => {
+						if (!response.ok) {
+							console.error('Error status:', response.status);
+							if (response.headers.get("Content-Type")?.includes("application/json")) {
+								return response.json().then(errorData => {
+									console.error('Error details:', errorData);
+									throw new Error(`Server responded with ${response.status}: ${errorData.message}`);
+								});
+							} else {
+								throw new Error(`Server responded with ${response.status}`);
+							}
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log('Note saved:', data);
+						document.getElementById('addNoteForm').reset();
+						$('#addNoteSection').hide();
+						$('#existingNotesSection').show();
+						refreshNotesList(patientId);
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+			}
+
+	</script>
+
+
+
+
+}

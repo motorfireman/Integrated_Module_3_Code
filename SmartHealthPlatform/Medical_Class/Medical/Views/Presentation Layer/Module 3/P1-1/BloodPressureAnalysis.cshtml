@@ -1,0 +1,719 @@
+﻿@{
+	ViewData["Title"] = "Blood Pressure Analysis";
+	ViewData["Heading"] = "Blood Pressure Analysis";
+}
+
+@model List<Medical.ViewModel.Module_3.P1_1.BloodPressureComponent.BloodPressureAnalysisViewModel>
+@{
+	var patientName = Model.FirstOrDefault()?.PatientName ?? "N/A";
+	var patientAge = Model.FirstOrDefault()?.Age ?? 0;
+	var totalReadings = Model.Count;
+	var latestSystolic = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.SystolicPressure ?? 0;
+	var latestDiastolic = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.DiastolicPressure ?? 0;
+	var latestHHRisk = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.HeartHealthRiskSeverity ?? 0;
+}
+
+<!--**********************************
+	Content body start
+***********************************-->
+<div class="content-body default-height default-height">
+	<!-- row -->
+	<div class="container-fluid">
+
+		<div class="form-head d-flex mb-3 mb-md-3 align-items-start flex-wrap justify-content-between">
+			<!-- Welcome Message -->
+			<div class="me-auto d-lg-block">
+				<h3 class="text-primary font-w600">Welcome, Doctor!</h3>
+				<p class="mb-0">Explore the Blood Pressure Analysis Below</p>
+			</div>
+
+			<!-- Back to Patient List button -->
+
+			<div class="col-lg-3 d-flex justify-content-end">
+				<a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+					<i class="fas fa-search"></i> Return to Searching
+				</a>
+			</div>
+		</div>
+
+		<!-- Stat Cards Row -->
+		<div class="row">
+			<!-- Patient Name -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-primary">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-user"></i> <!-- Changed to a more standard user icon -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 ">Patient Name</p>
+								<h2 class="text-white dynamic-text">@patientName</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Age -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-success">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-hourglass-half"></i> <!-- Represents time or age -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 text-nowrap">Age</p>
+								<h2 class="text-white dynamic-text1">@patientAge</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Systolic Value -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-danger">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-stethoscope"></i>
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Systolic Pressure</p>
+								<h2 class="text-white dynamic-text1">@latestSystolic.ToString("F2")</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Diastolic Value -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-tint"></i> 
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Diastolic Pressure</p>
+								<h2 class="text-white dynamic-text1">@latestDiastolic.ToString("F2")</h2> 
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="app-stat card" style="background-color: #FFFFE0;">
+					<!-- Set background color to light yellow -->
+					<div class="card-header border-0 pb-0">
+						<h4 class="card-title text-black">Latest Blood Pressure Readings</h4>
+					</div>
+					<div class="card-body p-4">
+						<div class="media flex-wrap">
+							<!-- Stats Content -->
+							<div class="card-body pt-2 text-black">
+								<!-- Set text color to black -->
+								@if (Model.Any()) // Check if Model contains any items
+								{
+									var latestReading = Model.Last(); // Get the last item in the list
+
+									<div>
+										<div class="row">
+											<div class="col-md-12">
+												<p><strong class="text-black">Heart Health Severity: @latestHHRisk.ToString() </strong></p>
+												<p class="font-weight-bold" style="color: red;">@latestReading.HeartHealthRiskMessages</p>
+												<p><strong class="text-black">Mean Arterial Pressure: @latestReading.MAPRiskSeverity.ToString()</strong></p>
+												<p class="font-weight-bold" style="color: red;">@latestReading.MAPRiskMessages</p>
+												<p><strong class="text-black">TimeStamp: @latestReading.Timestamp</strong></p>
+
+											</div>
+										</div>
+										<hr />
+									</div>
+								}
+								else
+								{
+									<p>No data available.</p>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Systolic Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Systolic Over Time (3 Months)</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="SystolicChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Diastolic Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Diastolic Over Time (3 Months)</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="DiastolicChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- MAP Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Mean Arterial Pressure Analysis</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="MAPChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+
+			<!-- Systolic Scatter Plot -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Systolic Scatter Plot Over Time (6 Months)</h4>
+					</div>
+
+					<div class="card-body">
+						<canvas id="systolicScatterPlot" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+
+			<!-- Diastolic Scatter Plot -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Diastolic Scatter Plot Over Time (6 Months)</h4>
+					</div>
+
+					<div class="card-body">
+						<canvas id="diastolicScatterPlot" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Heart Health Bar Chart -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Heart Health Risk Severity</h4>
+					</div>
+
+					<div class="card-body">
+						<canvas id="HHChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Patient Notes -->
+			<div class="container">
+				<div class="col-xl-12 col-lg-12" id="existingNotesSection">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Existing Notes</h4>
+							<!-- Button to Show Add Notes Section -->
+							<button type="button" class="btn btn-success" id="showAddNote">Add Note</button>
+						</div>
+						<ul class="list-group list-group-flush">
+
+							<ul class="list-group list-group-flush" id="existingNotesList">
+								<!-- Existing notes will be dynamically filled here -->
+							</ul>
+
+						</ul>
+					</div>
+				</div>
+
+				<!-- Add Notes Section (Initially Hidden) -->
+				<div class="col-xl-12 col-lg-12" id="addNoteSection" style="display: none;">
+					<div class="card">
+						<div class="card-header d-flex justify-content-between align-items-center">
+							<h4 class="card-title">Add Note</h4>
+							<button type="button" class="btn btn-secondary" id="cancelAddNote">Cancel</button>
+						</div>
+						<div class="card-body">
+							<div class="basic-form">
+								<form id="addNoteForm">
+									<div class="mb-3">
+										<label for="userName" class="form-label">Your Name</label>
+										<input type="text" class="form-control" id="userName" name="userName" placeholder="Enter your name">
+									</div>
+									<div class="mb-3">
+										<label for="note" class="form-label">Note</label>
+										<textarea class="form-control" rows="4" id="note" name="note" placeholder="Enter your note here..."></textarea>
+									</div>
+									<button type="button" class="btn btn-primary" onclick="submitNote()">Submit Note</button>
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+	</div>
+</div>
+<!--**********************************
+	Content body end
+***********************************-->
+@section mediqu_style
+{
+
+	<style>
+		.text-black {
+			color: black;
+		}
+
+		.dynamic-text {
+			font-size: 14px;
+		}
+
+		.dynamic-text1 {
+			font-size: 20px;
+		}
+		/* Smaller font size for dynamic text */
+	</style>
+
+
+	<!-- Start Page Level CSS -->
+	<link href="~/mediqu/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
+	<link href="~/mediqu/vendor/chartist/css/chartist.min.css" rel="stylesheet">
+	<!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+	<!--**********************************
+		Scripts
+	***********************************-->
+	<!-- Required vendors -->
+	<script src="~/mediqu/vendor/global/global.min.js"></script>
+	<script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+	<!-- Apex Chart -->
+	<script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+
+	<!-- Dashboard 1 -->
+	<script src="~/mediqu/js/dashboard/dashboard-1.js"></script>
+	<script src="~/mediqu/js/custom.min.js"></script>
+	<script src="~/mediqu/js/deznav-init.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<!-- Include Moment.js -->
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+	<!-- Include Chart.js Moment Adapter -->
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
+
+	<script>
+
+			/*-------------------------Function for display chart.js----------------*/
+
+
+			document.addEventListener("DOMContentLoaded", function () {
+
+				var jsonData = @Html.Raw(Json.Serialize(Model));
+
+				// Filter data for the last 3 months
+				var currentDate = new Date();
+				var threeMonthsAgo = new Date();
+				threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
+				// Convert timestamps to a more chart-friendly format if needed
+				var labels = jsonData.map(item => new Date(item.timestamp).toLocaleDateString());
+
+				var SystolicData = jsonData.map(item => item.systolicPressure);
+				var DiastolicData = jsonData.map(item => item.diastolicPressure);
+				var MAPData = jsonData.map(item => item.mapRiskSeverity);
+				var HHData = jsonData.map(item => item.heartHealthRiskSeverity);
+
+				// systolic data
+				var scatterData = jsonData.map(item => {
+					return {
+						x: new Date(item.timestamp), // Convert timestamp to JavaScript Date object
+						y: item.systolicPressure
+					};
+				});
+
+				// systolic data
+				var diascatterData = jsonData.map(item => {
+					return {
+						x: new Date(item.timestamp), // Convert timestamp to JavaScript Date object
+						y: item.systolicPressure
+					};
+				});
+
+
+				var systolicCtx = document.getElementById('SystolicChart').getContext('2d');
+				var diastolicCtx = document.getElementById('DiastolicChart').getContext('2d');
+				var mapCtx = document.getElementById('MAPChart').getContext('2d');
+				var scatterCtx = document.getElementById('systolicScatterPlot').getContext('2d');
+				var diascatterCtx = document.getElementById('diastolicScatterPlot').getContext('2d');
+
+
+				new Chart(diascatterCtx, {
+					type: 'scatter',
+					data: {
+						datasets: [{
+							label: 'Diastolic Blood Pressure Readings',
+							data: diascatterData,
+							backgroundColor: 'rgb(255, 205, 132)'
+						}]
+					},
+					options: {
+						scales: {
+							x: {
+								type: 'time',
+								time: {
+									unit: 'day', // Adjust this based on your data's granularity
+									tooltipFormat: 'll'
+								},
+								title: {
+									display: true,
+									text: 'Date'
+								}
+							},
+							y: {
+								beginAtZero: false,
+								title: {
+									display: true,
+									text: 'Diastolic Pressure (mmHg)'
+								}
+							}
+						}
+					}
+				});
+
+
+
+				new Chart(scatterCtx, {
+					type: 'scatter',
+					data: {
+						datasets: [{
+							label: 'Systolic Blood Pressure Readings',
+							data: scatterData,
+							backgroundColor: 'rgb(255, 99, 132)'
+						}]
+					},
+					options: {
+						scales: {
+							x: {
+								type: 'time',
+								time: {
+									unit: 'day', // Adjust this based on your data's granularity
+									tooltipFormat: 'll'
+								},
+								title: {
+									display: true,
+									text: 'Date'
+								}
+							},
+							y: {
+								beginAtZero: false,
+								title: {
+									display: true,
+									text: 'Systolic Pressure (mmHg)'
+								}
+							}
+						}
+					}
+				});
+
+				// Systolic Chart
+				new Chart(systolicCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Systolic Pressure',
+							data: SystolicData,
+							borderColor: 'red',
+							backgroundColor: 'rgba(255, 0, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 4 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+				// Diastolic Chart
+				new Chart(diastolicCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Diastolic Pressure',
+							data: DiastolicData,
+							borderColor: 'blue',
+							backgroundColor: 'rgba(255, 0, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 5 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+				// MAP Chart
+				new Chart(mapCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Mean Arterial Pressure',
+							data: MAPData,
+							borderColor: 'green',
+							backgroundColor: 'rgba(12, 230, 20, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 5.0 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 20 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+
+				new Chart(HHChart, {
+					type: 'bar',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Heart Health Risk',
+							data: HHData,
+							backgroundColor: 'rgba(255, 99, 132, 0.5)', // Red color for systolic pressure
+						}]
+					},
+					options: {
+						scales: {
+							x: {
+								stacked: true,
+							},
+							y: {
+								stacked: true,
+								beginAtZero: true,
+							}
+						}
+					}
+				});
+
+
+			});
+
+
+			/*-------------------------Function for Patient Notes----------------*/
+
+			$(document).ready(function () {
+				var patientId = @Model.FirstOrDefault()?.PatientID ?? 0;
+
+				// Show existing notes list by default
+				refreshNotesList(patientId);
+
+				$('#showAddNote').click(function () {
+					$('#existingNotesSection').hide(); // Hide the existing notes section
+					$('#addNoteSection').show(); // Show the add notes section
+				});
+
+				$('#cancelAddNote').click(function () {
+					$('#addNoteSection').hide(); // Hide the add notes section
+					$('#existingNotesSection').show(); // Show the existing notes section again
+					// No need to refresh notes list here as we assume no changes were made
+				});
+			});
+
+			function refreshNotesList(patientId) {
+				fetch(`/PatientNotes/GetNotesByPatient/${patientId}`)
+					.then(response => response.json())
+					.then(data => {
+						const notesList = document.getElementById('existingNotesList');
+						notesList.innerHTML = ''; // Clear existing notes
+						data.forEach(note => {
+							const noteElement = document.createElement('li');
+							noteElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center'); // Ensure flex layout for right alignment
+
+						
+							// Note content
+							const noteContent = document.createElement('span');
+							// Format timestamp
+							const formattedTimestamp = new Date(note.timestamp).toLocaleString();
+							// Construct readable note content
+							const readableContent = `Doctor ${note.userName} (${formattedTimestamp}) - ${note.note}`;
+
+							noteContent.textContent = readableContent;
+							noteElement.appendChild(noteContent);
+
+
+							// Create a delete button
+							const deleteBtn = document.createElement('button');
+							deleteBtn.textContent = 'Delete';
+							deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm'); // Bootstrap classes for styling
+							deleteBtn.onclick = () => deleteNote(note.id, patientId); 
+
+							noteElement.appendChild(deleteBtn); // Add delete button to the note element
+							notesList.appendChild(noteElement);
+						});
+					})
+					.catch(error => console.error('Error refreshing notes:', error));
+			}
+
+
+			function deleteNote(noteId, patientId) {
+				fetch(`/PatientNotes/DeleteNote/${noteId}`, {
+					method: 'DELETE'
+				})
+					.then(response => {
+						if (response.ok) {
+							console.log('Note deleted successfully');
+							refreshNotesList(patientId); // Refresh the list to show changes
+						} else {
+							throw new Error('Failed to delete note');
+						}
+					})
+					.catch(error => console.error('Error deleting note:', error));
+			}
+
+
+			function submitNote() {
+				const userName = document.getElementById('userName').value;
+				const noteText = document.getElementById('note').value;
+				const patientId = @Model.FirstOrDefault()?.PatientID ?? 0;
+				const patientName = '@Model.FirstOrDefault()?.PatientName';
+
+				const noteData = {
+					PatientID: patientId,
+					PatientName: patientName,
+					UserName: userName,
+					Note: noteText,
+					Timestamp: new Date().toISOString(),
+				};
+
+				// Log the noteData object to the console
+				console.log('Submitting note with data:', noteData);
+
+				fetch('/PatientNotes/SavePatientNote', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(noteData),
+				})
+					.then(response => {
+						if (!response.ok) {
+							console.error('Error status:', response.status);
+							if (response.headers.get("Content-Type")?.includes("application/json")) {
+								return response.json().then(errorData => {
+									console.error('Error details:', errorData);
+									throw new Error(`Server responded with ${response.status}: ${errorData.message}`);
+								});
+							} else {
+								throw new Error(`Server responded with ${response.status}`);
+							}
+						}
+						return response.json();
+					})
+					.then(data => {
+						console.log('Note saved:', data);
+						document.getElementById('addNoteForm').reset();
+						$('#addNoteSection').hide();
+						$('#existingNotesSection').show();
+						refreshNotesList(patientId);
+					})
+					.catch((error) => {
+						console.error('Error:', error);
+					});
+			}
+
+	</script>
+
+
+
+
+}

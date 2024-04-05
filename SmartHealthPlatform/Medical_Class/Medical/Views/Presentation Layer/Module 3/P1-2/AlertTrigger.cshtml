@@ -1,0 +1,208 @@
+﻿@{
+    ViewData["Title"] = "Alert Trigger System";
+    ViewData["Heading"] = "Alert Trigger System";
+}
+
+
+<!--**********************************
+Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+
+
+        <div id="logged-in" class="d-none">
+
+            <div class="modal" id="alertModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Select Alert Type</h4>
+                        </div>
+                        <!-- Modal Body -->
+                        <div class="modal-body">
+                            <button type="button" class="btn btn-primary" id="emailBtn">Email</button>
+                            <button type="button" class="btn btn-primary" id="telegramBtn">Telegram</button>
+                            <button type="button" class="btn btn-primary" id="bothBtn">Both</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+
+                <!-- Manual alert button -->
+                <button type="button" class="btn btn-primary mb-3" id="manualAlertBtn">Send Manual Alert</button>
+
+                <!-- Table to display alerts -->
+                <table id="alertTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>User ID</th>
+                            <th>Recipient ID</th>
+                            <th>Type</th>
+                            <th>Caregiver ID</th>
+                            <th>Alert Config ID</th>
+                            <th>Triggered On</th>
+                            <th>Message</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertTableBody"></tbody>
+                </table>
+
+                <!-- Refresh button -->
+                <button type="button" class="btn btn-primary" id="refreshAlertBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+            </div>
+        </div>
+
+        <div id="not-logged-in" class="d-none">
+            <h3>You are not logged in.</h3>
+        </div>
+
+
+        <!--**********************************
+        This is the template. Copy everything from here (CTRL A + CTRL C then CTRL V.  Then start putting ur HTML code here within the TWO DIV Class.
+        ***********************************-->
+
+
+
+    </div>
+</div>
+<!--**********************************
+Content body end
+***********************************-->
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+    Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+    <script>
+
+        const loggedInContainer = document.querySelector("#logged-in");
+        const notLoggedInContainer = document.querySelector("#not-logged-in");
+
+        const checkLoginStatus = () => {
+            fetch("/MockLogin/CheckLogin/")
+                .then(response => response.json())
+                .then(json => {
+                    if (!json["logged_in"]) {
+                        notLoggedInContainer.className = "mb-4";
+                    } else {
+                        loggedInContainer.className = "mb-4";
+                    }
+                });
+        }
+
+        checkLoginStatus();
+
+        $(document).ready(function () {
+            // Call getAlerts function when the page loads
+            getAlerts();
+        });
+
+        // Function to handle manual alert sending
+        document.getElementById("manualAlertBtn").addEventListener("click", function () {
+            // Open the modal dialog
+            $('#alertModal').modal('show');
+        });
+
+        // Function to send alert via email
+        document.getElementById("emailBtn").addEventListener("click", function () {
+            sendAlert("Email");
+            $('#alertModal').modal('hide');
+        });
+
+        // Function to send alert via telegram
+        document.getElementById("telegramBtn").addEventListener("click", function () {
+            sendAlert("Telegram");
+            $('#alertModal').modal('hide');
+        });
+
+        // Function to send alert via email and telegram
+        document.getElementById("bothBtn").addEventListener("click", function () {
+            sendAlert("Email");
+            sendAlert("Telegram");
+            $('#alertModal').modal('hide');
+        });
+
+        // Function to send the alert based on selected type
+        function sendAlert(type) {
+            const recipientId = 204;
+            const caregiverId = 1;
+            const alertConfigId = 2;
+            const message = "This is a test message.";
+
+            $.ajax({
+                url: '/AlertTrigger/SendManualAlert',
+                type: 'POST',
+                data: {
+                    recipientId: recipientId,
+                    type: type,
+                    caregiverId: caregiverId,
+                    alertConfigId: alertConfigId,
+                    message: message
+                },
+                success: function (response) {
+                    alert("Alert sent successfully.");
+                },
+                error: function (xhr, status, error) {
+                    alert("Alert sent failed.");
+                }
+            });
+        }
+
+        // Function to fetch alerts
+        function getAlerts() {
+
+            $.ajax({
+                url: '/AlertTrigger/GetAlerts',
+                type: 'GET',
+                data: {
+                },
+                success: function (response) {
+                    // Update the table with alerts
+                    displayAlerts(response);
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response here
+                    console.error(error);
+                }
+            });
+        }
+
+        // Function to display alerts in the table
+        function displayAlerts(alerts) {
+            // Clear previous alerts
+            $('#alertTableBody').empty();
+
+            // Iterate through the alerts and display them in the table
+            alerts.forEach(function (alert) {
+                $('#alertTableBody').append('<tr><td>' + alert.id + '</td><td>' + alert.userId + '</td><td>' + alert.recipientId + '</td><td>' + alert.type + '</td><td>' + alert.caregiverId + '</td><td>' + alert.alertConfigId + '</td><td>' + alert.triggeredOn + '</td><td>' + alert.message + '</td></tr>');
+            });
+        }
+
+        // Function to refresh alerts when the refresh button is clicked
+        document.getElementById("refreshAlertBtn").addEventListener("click", function () {
+            getAlerts();
+        });
+
+    </script>
+
+}

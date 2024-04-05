@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" class="h-100">
+<head>
+    <partial name="medical/_Meta" />
+    <title>[@ViewBag.Title] Medical Hospital</title>
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.png">
+    @RenderSection("mediqu_style", false)
+    <!-- Global CSS -->
+    <link href="~/mediqu/vendor/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+    <!-- End Global CSS -->
+    <!-- Bottom CSS -->
+    <link class="main-css" href="~/mediqu/css/style.css" rel="stylesheet">
+</head>
+
+
+
+<body class="h-100">
+    @RenderBody()
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+
+</body>
+
+
+</html>

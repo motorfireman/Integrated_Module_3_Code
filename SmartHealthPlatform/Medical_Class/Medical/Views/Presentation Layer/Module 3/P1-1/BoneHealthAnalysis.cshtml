@@ -1,0 +1,618 @@
+﻿@{
+	ViewData["Title"] = "Bone Health Analysis";
+	ViewData["Heading"] = "Bone Health Analysis";
+}
+
+@model List<Medical.ViewModel.Module_3.P1_1.BoneHealthComponent.BoneHealthAnalysisViewModel>
+@{
+	var patientName = Model.FirstOrDefault()?.PatientName ?? "N/A";
+	var patientAge = Model.FirstOrDefault()?.Age ?? 0;
+	var totalReadings = Model.Count;
+
+	<!-- bone health readings -->
+	var latestWeight = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.Weight ?? 0;
+	var latestBoneMass = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.BoneMass ?? 0;
+	var latestBodyFatPercentage = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.BodyFatPercentage ?? 0;
+	var latestLeanMass = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.LeanMass ?? 0;
+	var latestProtein = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.Protein ?? 0;
+	var latestVisceralFatRating = Model.OrderByDescending(m => m.Timestamp).FirstOrDefault()?.VisceralFatRating ?? 0;
+
+
+
+}
+
+<!--**********************************
+	Content body start
+***********************************-->
+<div class="content-body default-height default-height">
+	<!-- row -->
+	<div class="container-fluid">
+
+
+		<div class="form-head d-flex mb-3 mb-md-3 align-items-start flex-wrap justify-content-between">
+
+
+			<!-- Welcome Message -->
+
+			<div class="me-auto d-lg-block">
+				<h3 class="text-primary font-w600">Welcome, Doctor!</h3>
+				<p class="mb-0">Explore the Air Pulse Oximeter Analysis Below</p>
+			</div>
+
+
+			<!-- Back to Patient List button -->
+
+			<div class="col-lg-3 d-flex justify-content-end">
+				<a class="btn btn-smooth" href="@Url.Action("PatientList", "PatientList")" style="background-color: #4CAF50; color: white; border: none; cursor: pointer; padding: 10px 24px; border-radius: 5px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; transition-duration: 0.4s; box-shadow: 0 9px #999;">
+					<i class="fas fa-search"></i> Return to Searching
+				</a>
+			</div>
+
+
+		</div>
+
+
+
+		<!-- Stat Cards Row -->
+		<div class="row">
+
+			<!-- Patient Name -->
+			<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+				<div class="app-stat card bg-primary">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-user"></i> <!-- Changed to a more standard user icon -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 ">Patient Name</p>
+								<h2 class="text-white dynamic-text">@patientName</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Age -->
+			<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+				<div class="app-stat card bg-success">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-hourglass-half"></i> <!-- Represents time or age -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1 text-nowrap">Age</p>
+								<h2 class="text-white dynamic-text1">@patientAge</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Total Readings -->
+			<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+				<div class="app-stat card bg-danger">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-chart-line"></i> <!-- Suggests data or readings over time -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Total Readings</p>
+								<h2 class="text-white dynamic-text1">@totalReadings</h2> <!-- Smaller font size applied -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="row justify-content-center">
+				<!-- Latest Weight -->
+				<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+					<div class="app-stat card bg-info">
+						<div class="card-body p-4" style="padding: 10px;">
+							<!-- Reduced padding -->
+							<div class="media flex-wrap">
+								<span class="me-3">
+									<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+								</span>
+								<div class="media-body text-white text-end">
+									<p class="mb-1">Latest Weight (KG)</p>
+									<h2 class="text-white dynamic-text1">@latestWeight.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Latest Bone Mass -->
+				<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+					<div class="app-stat card bg-info">
+						<div class="card-body p-4" style="padding: 10px;">
+							<!-- Reduced padding -->
+							<div class="media flex-wrap">
+								<span class="me-3">
+									<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+								</span>
+								<div class="media-body text-white text-end">
+									<p class="mb-1">Latest Bone Mass (KG)</p>
+									<h2 class="text-white dynamic-text1">@latestBoneMass.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Body Fat Percentage -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Body Fat Percentage (%)</p>
+								<h2 class="text-white dynamic-text1">@latestBodyFatPercentage.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Lean Mass -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Lean Mass (%)</p>
+								<h2 class="text-white dynamic-text1">@latestLeanMass.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Protein -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Protein (%)</p>
+								<h2 class="text-white dynamic-text1">@latestProtein.ToString("F2")</h2> <!-- Formatted to 2 decimal places -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Latest Visceral Fat Rating -->
+			<div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+				<div class="app-stat card bg-info">
+					<div class="card-body p-4" style="padding: 10px;">
+						<!-- Reduced padding -->
+						<div class="media flex-wrap">
+							<span class="me-3">
+								<i class="fas fa-heartbeat"></i> <!-- Directly represents pulse or heart rate -->
+							</span>
+							<div class="media-body text-white text-end">
+								<p class="mb-1">Latest Visceral Fat Rating</p>
+								<h2 class="text-white dynamic-text1">@latestVisceralFatRating.ToString("F0")</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Current Risks -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="app-stat card" style="background-color: #FFFFFF;">
+					<!-- Set background color to light yellow -->
+					<div class="card-header border-0 pb-0">
+						<h4 class="card-title text-black">Current Risks</h4>
+					</div>
+					<div class="card-body p-4">
+						<div class="media flex-wrap">
+							<!-- Stats Content -->
+							<div class="card-body pt-2 text-black">
+								<!-- Set text color to black -->
+								@if (Model.Any()) // Check if Model contains any items
+								{
+									var latestReading = Model.Last(); // Get the last item in the list
+									<div>
+										<div class="row">
+											<div class="col-md-12">
+												@* <p><strong class="text-black">Perfusion Index: @latestReading.PerfusionIndex.ToString("N2") </strong></p>
+												<p><strong class="text-black">Pulse Rate: @latestReading.PulseRate.ToString("N2")</strong></p>
+												<p><strong class="text-black">SpO2: @latestReading.SpO2.ToString("N2")%</strong></p>
+												<p><strong class="text-black">Protein: @latestReading.Protein.ToString("N2")%</strong></p>
+												<p><strong class="text-black">TimeStamp: @latestReading.Timestamp</strong></p> *@
+												@if (!latestReading.RiskMessages.Any())
+												{
+													<p>This patient is currently free from any bone health risks.</p>
+												}
+												@foreach (var riskMessage in latestReading.RiskMessages)
+												{
+													<p class="font-weight-bold" style="color: red;">@riskMessage</p>
+												}
+
+											</div>
+										</div>
+										<hr />
+									</div>
+								}
+								else
+								{
+									<p>No data available.</p>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Past Risks -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="app-stat card" style="background-color: #FFFFFF;">
+					<!-- Set background color to light yellow -->
+					<div class="card-header border-0 pb-0">
+						<h4 class="card-title text-black">Past Risks</h4>
+					</div>
+					<div class="card-body p-4">
+						<div class="media flex-wrap">
+							<!-- Stats Content -->
+							<div class="card-body pt-2 text-black">
+								<!-- Set text color to black -->
+								@if (Model.Any()) // Check if Model contains any items
+								{
+									<div>
+										<div class="row">
+											<div class="col-md-12">
+												
+												@foreach (var reading in Model.OrderByDescending(r => r.Timestamp))
+												{
+													@if (!reading.RiskMessages.Any())
+													{
+														continue;
+													} 
+													else
+													{
+														<p><strong class="text-black">Date: @reading.Timestamp</strong></p>
+
+														bool firstMetricWritten = false; // Initialize the flag outside the HTML
+
+														@foreach (var riskMessage in reading.RiskMessages)
+														{
+															<div class="indent">
+																<p class="font-weight-bold" style="color: red;">@riskMessage</p>
+
+																<p>
+																	@if (riskMessage.Contains("weight"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Weight: @reading.Weight.ToString("F2")
+																		firstMetricWritten = true;
+																	}
+																	@if (riskMessage.Contains("bone mass"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Bone Mass: @reading.BoneMass.ToString("F2")
+																		firstMetricWritten = true;
+																	}
+																	@if (riskMessage.Contains("body fat percentage"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Body Fat Percentage: @reading.BodyFatPercentage.ToString("F2")
+																		firstMetricWritten = true;
+																	}
+																	@if (riskMessage.Contains("lean mass"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Lean Mass: @reading.LeanMass.ToString("F2")
+																		firstMetricWritten = true;
+																	}
+																	@if (riskMessage.Contains("protein"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Protein: @reading.Protein.ToString("F2")
+																		firstMetricWritten = true;
+																	}
+																	@if (riskMessage.Contains("visceral fat rating"))
+																	{
+																		if (firstMetricWritten)
+																		{
+																			@:,
+																		}
+																		@:Visceral Fat Rating: @reading.VisceralFatRating.ToString("F0")
+																		firstMetricWritten = true;
+																	}
+																</p>
+															</div>
+														}
+														<hr />
+													}
+												}
+											</div>
+										</div>
+									</div>
+								}
+								else
+								{
+									<p>No data available.</p>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+			<!-- Chart.js -->
+			<!--Perfusion Index -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Weight Trends</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="perfusionIndexChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Pulse Rate -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+
+					<div class="card-header">
+						<h4 class="card-title">Visceral Fat Rating Trends</h4>
+					</div>
+
+
+					<div class="card-body">
+						<canvas id="pulseRateChart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- SpO2 -->
+			<div class="col-xl-12 col-xxl-12 col-lg-12 col-md-12">
+				<div class="card">
+					<div class="card-header">
+						<h4 class="card-title">Bone Mass Trends</h4>
+					</div>
+
+					<div class="card-body">
+						<canvas id="spO2Chart" style="width: 100%; height: 200px;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+
+
+		</div>
+	</div>
+	<!--**********************************
+		Content body end
+	***********************************-->
+	@section mediqu_style
+ {
+
+		<style>
+			.text-black {
+				color: black;
+			}
+
+			.dynamic-text {
+				font-size: 14px;
+			}
+
+			.dynamic-text1 {
+				font-size: 20px;
+			}
+			/* Smaller font size for dynamic text */
+
+			.indent {
+				margin-left: 20px;
+			}
+		</style>
+
+
+		<!-- Start Page Level CSS -->
+		<link href="~/mediqu/vendor/jqvmap/css/jqvmap.min.css" rel="stylesheet">
+		<link href="~/mediqu/vendor/chartist/css/chartist.min.css" rel="stylesheet">
+		<!-- End Page Level CSS -->
+	}
+
+	@section mediqu_script
+ {
+		<!--**********************************
+			Scripts
+		***********************************-->
+		<!-- Required vendors -->
+		<script src="~/mediqu/vendor/global/global.min.js"></script>
+		<script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+		<!-- Apex Chart -->
+		<script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+
+		<!-- Dashboard 1 -->
+		<script src="~/mediqu/js/dashboard/dashboard-1.js"></script>
+		<script src="~/mediqu/js/custom.min.js"></script>
+		<script src="~/mediqu/js/deznav-init.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+		<script>
+
+			/*-------------------------Function for display chart.js----------------*/
+			document.addEventListener("DOMContentLoaded", function () {
+
+				var jsonData = @Html.Raw(Json.Serialize(Model));
+				console.log("jsonData:", jsonData);
+
+				// Convert timestamps to a more chart-friendly format if needed
+				var labels = jsonData.map(item => new Date(item.timestamp).toLocaleDateString());
+
+				var weightData = jsonData.map(item => item.weight);
+				var boneMassData = jsonData.map(item => item.boneMass);
+				var bodyFatPercentageData = jsonData.map(item => item.bodyFatPercentage);
+				var leanMassData = jsonData.map(item => item.leanMass);
+				var proteinData = jsonData.map(item => item.protein);
+				var visceralFatRatingData = jsonData.map(item => item.visceralFatRating);
+
+				var perfusionIndexCtx = document.getElementById('perfusionIndexChart').getContext('2d');
+				var pulseRateCtx = document.getElementById('pulseRateChart').getContext('2d');
+				var spO2Ctx = document.getElementById('spO2Chart').getContext('2d');
+
+				// Weight Chart
+				new Chart(perfusionIndexCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Weight',
+							data: weightData,
+							borderColor: 'red',
+							backgroundColor: 'rgba(255, 0, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 0.5 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 10 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+				// Visceral Fat Rating Chart
+				new Chart(pulseRateCtx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Visceral Fat Rating',
+							data: visceralFatRatingData,
+							borderColor: 'blue',
+							backgroundColor: 'rgba(0, 0, 255, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 0.5 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 10 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+
+				});
+
+
+				// Bone Mass Chart
+				new Chart(spO2Ctx, {
+					type: 'line',
+					data: {
+						labels: labels,
+						datasets: [{
+							label: 'Bone Mass',
+							data: boneMassData,
+							borderColor: 'green',
+							backgroundColor: 'rgba(0, 255, 0, 0.5)',
+							fill: false,
+						}]
+					},
+					options: {
+						scales: {
+							y: {
+								beginAtZero: false, // Adjust as needed
+								// Add stepSize to adjust the spacing of intervals
+								ticks: {
+									stepSize: 0.5 // Adjust step size as needed
+								}
+							},
+							x: {
+								// To improve spacing and readability on the X-axis
+								ticks: {
+									autoSkip: true,
+									maxTicksLimit: 10 // Adjust to control the maximum number of displayed labels
+								}
+							}
+						}
+					}
+				});
+			});
+
+
+		</script>
+
+
+
+
+	}

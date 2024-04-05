@@ -1,0 +1,169 @@
+﻿@{
+    ViewData["Title"] = "Telegram Registration";
+    ViewData["Heading"] = "Telegram Registration";
+}
+
+
+<!--**********************************
+Content body start
+***********************************-->
+<div class="content-body default-height">
+    <div class="container-fluid">
+        
+
+        <div id="logged-in" class="d-none">
+            
+            @* <h1>你好啊，你可以在这里注册你的电报账号，之后就可以通过电报收到通知啦！</h1> *@
+            <h3>Register your account here to receive notifications via Telegram.</h3>
+            
+            <div class="d-flex gap-1">
+                <p>Telegram Registration Status: </p>
+                <p id="registration_status"></p>
+            </div>
+
+            <div class="d-none" id="generate-token-container">
+                <button type="button" class="btn btn-primary" id="generate-token-button">Generate Token</button>
+            </div>
+
+            <div class="d-none" id="deregister-container">
+                <button type="button" class="btn btn-primary" id="deregister-button">De-register Account</button>
+            </div>
+
+            <div class="d-none" id="token-container">
+                <p>Copy the token below the Telegram Bot <a class="alert-link" target="_blank" href="https://t.me/SmartHealthPlatformBot/">here</a> to register your account.</p>
+                <p>The token will expire in 15 minutes</p>
+                <div class="alert alert-primary mb-2 d-flex align-items-center">
+                    <p id="token" class="mb-0 pe-3 font-monospace"></p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy" role="button" id="copy-button" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/>
+                    </svg>
+                </div>
+                <p class="d-none" id="copied-text">Copied!</p>
+                <div>
+                    <button type="button" class="btn btn-secondary mt-2" id="refresh-button">Done</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="not-logged-in" class="d-none">
+            <h3>You are not logged in.</h3>
+        </div>
+
+
+        <!--**********************************
+        This is the template. Copy everything from here (CTRL A + CTRL C then CTRL V.  Then start putting ur HTML code here within the TWO DIV Class.
+        ***********************************-->
+
+
+
+    </div>
+</div>
+<!--**********************************
+Content body end
+***********************************-->
+
+@section mediqu_style
+{
+    <!-- Start Page Level CSS -->
+    <!-- End Page Level CSS -->
+}
+
+@section mediqu_script
+{
+    <!--**********************************
+    Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="~/mediqu/vendor/global/global.min.js"></script>
+
+    <script src="~/mediqu/vendor/chart.js/Chart.bundle.min.js"></script>
+    <!-- Apex Chart -->
+    <script src="~/mediqu/vendor/apexchart/apexchart.js"></script>
+    <script src="~/mediqu/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/mediqu/js/custom.min.js"></script>
+    <script src="~/mediqu/js/deznav-init.js"></script>
+    <script>
+    
+    const loggedInContainer = document.querySelector("#logged-in");
+    const notLoggedInContainer = document.querySelector("#not-logged-in");
+    const tokenContainer = document.querySelector("#token-container");
+    const tokenElement = document.querySelector("#token");
+    const generateTokenContainer = document.querySelector("#generate-token-container");
+    const generateTokenButton = document.querySelector("#generate-token-button");
+    const deregisterContainer = document.querySelector("#deregister-container");
+    const deregisterButton = document.querySelector("#deregister-button");
+    const refreshButton = document.querySelector("#refresh-button");
+    const copyButton = document.querySelector("#copy-button");
+    const copiedText = document.querySelector("#copied-text");
+    let registrationStatus = "Not registered";
+    
+    const checkLoginStatus = () => {
+        fetch("/MockLogin/CheckLogin/")
+            .then(response => response.json())
+            .then(json => {
+                if (!json["logged_in"]) {
+                    notLoggedInContainer.className = "mb-4";
+                } else {
+                    loggedInContainer.className = "mb-4";
+                }
+            });
+    }
+    
+    const updateRegistrationStatus = () => {
+        fetch("/Telegram/GetRegistrationStatus/")
+            .then(response => response.json())
+            .then(json => {
+                registrationStatus = json["registrationStatus"];
+                document.querySelector("#registration_status").textContent = registrationStatus
+                if (registrationStatus === "Registered") {
+                    generateTokenContainer.className = "d-none";
+                    deregisterContainer.className = "mb-4";
+                    tokenContainer.className = "d-none";
+                    return;
+                }
+                generateTokenContainer.className = "mb-4";
+                deregisterContainer.className = "d-none";
+            });
+    }
+    
+    const generateToken = () => {
+        fetch("/Telegram/GenerateToken/")
+        .then(response => response.json())
+        .then(json => {
+            console.log(json)
+            // Account already registered
+            if (json["status"] === "error") {
+                updateRegistrationStatus()
+                return;
+            }
+            tokenContainer.className = "d-flex flex-column align-items-start";
+            tokenElement.textContent = json["token"];
+        });
+    }
+    
+    const deRegister = () => {
+        fetch("/Telegram/DeRegisterAccount/")
+        .then(response => response.json())
+        .then(json => {
+            updateRegistrationStatus();
+        });
+    }
+    
+    const copyToken = () => {
+        const token = tokenElement.innerText;
+        navigator.clipboard.writeText(token).then(() => {
+            copiedText.className = "mb-2";
+        });
+    }
+    
+    checkLoginStatus();
+    updateRegistrationStatus();
+    
+    generateTokenButton.addEventListener("click", e => generateToken());
+    deregisterButton.addEventListener("click", e => deRegister());
+    refreshButton.addEventListener("click", e => updateRegistrationStatus());
+    copyButton.addEventListener("click", e => copyToken());
+    
+    </script>
+
+}
